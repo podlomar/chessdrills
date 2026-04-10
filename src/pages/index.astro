@@ -1,8 +1,9 @@
 ---
 import styles from './HomePage.module.css';
 import '../styles/global.css';
+import { twoKingsAndQueen } from '../generators/twoKingsAndQueen.js';
 
-const fullFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const fullFen = twoKingsAndQueen();
 const placement = fullFen.split(' ')[0];
 const chessComUrl = `https://www.chess.com/practice/custom?fen=${encodeURIComponent(fullFen)}`;
 ---
@@ -18,7 +19,12 @@ const chessComUrl = `https://www.chess.com/practice/custom?fen=${encodeURICompon
     <div class={styles.container}>
       <h1>Chess Train</h1>
       <img src={`/board?fen=${placement}`} class={styles.board} alt="Chess board" />
-      <a href={chessComUrl} target="_blank" rel="noopener noreferrer">Chess.com</a>
+      <div class={styles.actions}>
+        <a href="/" class={styles.button}>Regenerate</a>
+        <a href={chessComUrl} target="_blank" rel="noopener noreferrer" class={styles.link}>
+          Practice on Chess.com
+        </a>
+      </div>
     </div>
   </body>
 </html>
