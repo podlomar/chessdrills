@@ -1,0 +1,12 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.board {
+  margin-top: var(--spacing-md);
+  width: 400px;
+  height: auto;
+  border: 2px solid var(--text-primary);
+}

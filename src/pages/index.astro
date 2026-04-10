@@ -1,0 +1,24 @@
+---
+import styles from './HomePage.module.css';
+import '../styles/global.css';
+
+const fullFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const placement = fullFen.split(' ')[0];
+const chessComUrl = `https://www.chess.com/practice/custom?fen=${encodeURIComponent(fullFen)}`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chess Train</title>
+  </head>
+  <body>
+    <div class={styles.container}>
+      <h1>Chess Train</h1>
+      <img src={`/board?fen=${placement}`} class={styles.board} alt="Chess board" />
+      <a href={chessComUrl} target="_blank" rel="noopener noreferrer">Chess.com</a>
+    </div>
+  </body>
+</html>

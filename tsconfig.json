@@ -1,8 +1,7 @@
 {
-  "extends": "ionbeam/config/tsconfig.json",
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "types": ["ionbeam/types"]
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   }
 }
