@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "start": "node ./dist/server/entry.mjs"
+    "start": "node ./dist/server/entry.mjs",
+    "deploy": "bash deploy/deploy.sh"
   },
   "dependencies": {
     "@astrojs/node": "^9.1.4",
