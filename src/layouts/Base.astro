@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — Chess Drills</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a href="/" class="site-logo">Chess Drills</a>
+      </div>
+    </header>
+    <slot />
+  </body>
+</html>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid rgba(245, 232, 216, 0.1);
+    padding: 1.5rem 1rem;
+  }
+
+  .site-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .site-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #E2B38D;
+    text-decoration: none;
+  }
+</style>

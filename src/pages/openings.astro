@@ -1,0 +1,23 @@
+---
+import { TrainingBoard } from "../components/TrainingBoard";
+import Base from "../layouts/Base.astro";
+import styles from "./DrillsPage.module.css";
+---
+
+<Base title="Openings">
+  <main class={styles.main}>
+    <div class={styles.pageHeader}>
+      <h1 class={styles.pageTitle}>Openings</h1>
+      <p class={styles.pageDesc}>
+        Study common opening patterns and traps from both sides.
+      </p>
+    </div>
+    <div class={styles.boards}>
+      <TrainingBoard
+        client:load
+        type="wayward_queen_attack"
+        title="Wayward Queen Attack"
+      />
+    </div>
+  </main>
+</Base>

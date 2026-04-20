@@ -1,38 +1,43 @@
 ---
+import Base from '../layouts/Base.astro';
 import styles from './HomePage.module.css';
-import '../styles/global.css';
-import { twoKingsAndPawn } from '../chessboard/generate.js';
-import { twoKingsAndQueen } from '../generators/twoKingsAndQueen.js';
-import { TrainingBoard } from '../components/TrainingBoard.js';
 
-const pawnFen = twoKingsAndPawn();
-const queenFen = twoKingsAndQueen();
+const categories = [
+  {
+    slug: 'endgame-fundamentals',
+    title: 'Endgame Fundamentals',
+    desc: 'Master essential endgame techniques with king and piece coordination.',
+    count: 3,
+  },
+  {
+    slug: 'openings',
+    title: 'Openings',
+    desc: 'Study common opening patterns and traps from both sides.',
+    count: 0,
+  },
+];
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chess Train</title>
-  </head>
-  <body>
-    <div class={styles.container}>
-      <h1>Chess Train</h1>
-      <div class={styles.boards}>
-        <TrainingBoard
-          client:load
-          type="twoKingsAndPawn"
-          title="Two Kings and Pawn"
-          initialFen={pawnFen}
-        />
-        <TrainingBoard
-          client:load
-          type="twoKingsAndQueen"
-          title="Two Kings and Queen"
-          initialFen={queenFen}
-        />
-      </div>
+<Base title="Chess Drills">
+  <main class={styles.main}>
+    <div class={styles.hero}>
+      <p class={styles.tagline}>Practice positions. Build intuition.</p>
     </div>
-  </body>
-</html>
+    <div class={styles.categories}>
+      {categories.map((cat) => (
+        <a href={`/${cat.slug}`} class={styles.card}>
+          <div class={styles.cardBody}>
+            <h2 class={styles.cardTitle}>{cat.title}</h2>
+            <p class={styles.cardDesc}>{cat.desc}</p>
+          </div>
+          <div class={styles.cardFooter}>
+            <span class={styles.drillCount}>
+              {cat.count > 0 ? `${cat.count} drills` : 'Coming soon'}
+            </span>
+            <span class={styles.arrow}>→</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+</Base>

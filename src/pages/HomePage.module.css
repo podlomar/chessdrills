@@ -1,12 +1,77 @@
-.container {
-  max-width: 1200px;
+.main {
+  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem var(--spacing-md);
+  padding: 3rem 1rem 6rem;
 }
 
-.boards {
+.hero {
+  margin-bottom: 2.5rem;
+}
+
+.tagline {
+  font-size: 1rem;
+  color: rgba(245, 232, 216, 0.5);
+}
+
+.categories {
   display: flex;
-  flex-wrap: wrap;
-  gap: 3rem;
-  margin-top: 2rem;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(245, 232, 216, 0.12);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.card:hover {
+  border-color: rgba(226, 179, 141, 0.5);
+  background-color: rgba(226, 179, 141, 0.04);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cardTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.cardDesc {
+  font-size: 0.9rem;
+  color: rgba(245, 232, 216, 0.5);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drillCount {
+  font-size: 0.8rem;
+  color: rgba(245, 232, 216, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.arrow {
+  color: #E2B38D;
+  font-size: 1.1rem;
+  transition: transform 0.15s;
+}
+
+.card:hover .arrow {
+  transform: translateX(3px);
 }

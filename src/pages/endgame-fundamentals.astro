@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import styles from "./DrillsPage.module.css";
+import { TrainingBoard } from "../components/TrainingBoard.js";
+---
+
+<Base title="Endgame Fundamentals">
+  <main class={styles.main}>
+    <div class={styles.pageHeader}>
+      <h1 class={styles.pageTitle}>Endgame Fundamentals</h1>
+      <p class={styles.pageDesc}>
+        Master essential endgame techniques with king and piece coordination.
+      </p>
+    </div>
+    <div class={styles.boards}>
+      <TrainingBoard client:load type="kp_vs_k" title="King & Pawn" />
+      <TrainingBoard client:load type="kq_vs_k" title="King & Queen" />
+      <TrainingBoard client:load type="kr_vs_k" title="King & Rook" />
+    </div>
+  </main>
+</Base>
