@@ -3,8 +3,8 @@ set -euo pipefail
 
 # ── Configuration ────────────────────────────────────────────────────────────
 SSH_USER="podlomar"
-SSH_HOST="chesscub.podlomar.me"
-REMOTE_DIR="/var/www/chesscub.podlomar.me"
+SSH_HOST="chessdrills.podlomar.me"
+REMOTE_DIR="/var/www/chessdrills.podlomar.me"
 # ─────────────────────────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -35,6 +35,6 @@ echo "▶ Installing production dependencies..."
 ssh "${SSH_USER}@${SSH_HOST}" "bash -lc 'cd ${REMOTE_DIR} && npm ci --omit=dev'"
 
 echo "▶ Restarting service..."
-ssh "${SSH_USER}@${SSH_HOST}" "sudo systemctl restart chesscub"
+ssh "${SSH_USER}@${SSH_HOST}" "bash -lc 'sudo systemctl restart chesscub'"
 
 echo "✓ Done — https://${SSH_HOST}"
