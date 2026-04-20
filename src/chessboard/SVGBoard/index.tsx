@@ -1,11 +1,12 @@
-import { ChessBoard } from "../fen.js";
+import { Board, pieceLetter } from "immutable-chess";
 import { Pawn, Rook, Knight, Bishop, Queen, King } from "./pieces.js";
 
 interface Props {
-  board: ChessBoard;
+  board: Board;
+  orientation?: 'white' | 'black';
 }
 
-export const SVGBoard = ({ board }: Props) => {
+export const SVGBoard = ({ board, orientation = 'white' }: Props) => {
   const squareSize = 256;
   const boardSize = squareSize * 8;
 
@@ -29,28 +30,37 @@ export const SVGBoard = ({ board }: Props) => {
         <King color="black" />
       </defs>
 
-      <rect width={boardSize} height={boardSize} fill="#f0d9b5" />
-      {[...Array(8)].map((_, row) =>
-        [...Array(8)].map((_, col) => {
-          const isLightSquare = (row + col) % 2 === 0;
-          const piece = board[row * 8 + col];
+      <rect
+        width={boardSize}
+        height={boardSize}
+        fill="#E2B38D"
+        stroke="none"
+      />
 
-          return (
-            <g key={`${row}-${col}`}>
-              {isLightSquare ? null : (
-                <rect
-                  x={col * squareSize}
-                  y={row * squareSize}
-                  width={squareSize}
-                  height={squareSize}
-                  fill="#b58863"
-                />
-              )}
-              <use href={`#${piece}`} x={col * squareSize} y={row * squareSize} />
-            </g>
-          );
-        })
-      )}
+      {board.map((piece, index) => {
+        const rank = orientation === 'white' ? 7 - board.rank(index) : board.rank(index);
+        const file = orientation === 'white' ? board.file(index) : 7 - board.file(index);
+        const square = board.toSquare(index);
+        const isLightSquare = board.squareColor(index) === 'light';
+        const letter = piece !== null ? pieceLetter(piece) : null;
+
+        console.log(`Index: ${index}, Square: ${square}, Rank: ${rank}, File: ${file}, Piece: ${piece}, Symbol: ${letter}, Light Square: ${isLightSquare}`);
+
+        return (
+          <g key={`${rank}-${file}`}>
+            {isLightSquare ? null : (
+              <rect
+                x={file * squareSize}
+                y={rank * squareSize}
+                width={squareSize}
+                height={squareSize}
+                fill="#A88261"
+              />
+            )}
+            {letter && <use href={`#${letter}`} x={file * squareSize} y={rank * squareSize} />}
+          </g>
+        );
+      })}
     </svg>
   );
 };
