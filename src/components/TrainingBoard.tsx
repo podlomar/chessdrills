@@ -1,40 +1,62 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './TrainingBoard.module.css';
-
-export type PositionType = 'twoKingsAndPawn' | 'twoKingsAndQueen';
+import type { Position } from '../generators/generator';
 
 interface Props {
-  type: PositionType;
+  type: string;
   title: string;
-  initialFen: string;
 }
 
-export const TrainingBoard = ({ type, title, initialFen }: Props) => {
-  const [fen, setFen] = useState(initialFen);
-  const [loading, setLoading] = useState(false);
+type PositionState = Position | 'loading';
 
-  const regenerate = async () => {
-    setLoading(true);
-    const res = await fetch(`/api/position?type=${type}`);
+export const TrainingBoard = ({ type, title }: Props) => {
+  const [position, setPosition] = useState<PositionState>('loading');
+  const [copied, setCopied] = useState(false);
+
+  const regenerate = useCallback(async () => {
+    setPosition('loading');
+    const res = await fetch(`/api/position/${type}`);
     const data = await res.json();
-    setFen(data.fen);
-    setLoading(false);
+    setPosition(data);
+  }, [type]);
+
+  useEffect(() => {
+    regenerate();
+  }, [regenerate]);
+
+  const copyFen = async () => {
+    if (position === 'loading') return;
+    await navigator.clipboard.writeText(position.fen);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const placement = fen.split(' ')[0];
-  const chessComUrl = `https://www.chess.com/practice/custom?fen=${encodeURIComponent(fen)}`;
+  const placement = position === 'loading' ? '' : position.fen.split(' ')[0];
+  const chessComUrl = `https://www.chess.com/practice/custom?fen=${encodeURIComponent(position === 'loading' ? '' : position.fen)}`;
+
+  if (position === 'loading') {
+    return (
+      <div className={styles.card}>
+        <h2 className={styles.title}>{title}</h2>
+        <img src="/placeholder-board.svg" className={styles.board} alt="Loading chess position" />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.card}>
       <h2 className={styles.title}>{title}</h2>
       <img
-        src={`/board?fen=${placement}`}
+        src={`/board?fen=${placement}&orientation=${position.turnColor}`}
         className={styles.board}
         alt={`${title} chess position`}
       />
       <div className={styles.actions}>
-        <button className={styles.button} onClick={regenerate} disabled={loading}>
-          {loading ? 'Loading…' : 'Regenerate'}
+        <button className={styles.button} onClick={regenerate} disabled={position.randomized === false}>
+          Regenerate
+        </button>
+        <button className={styles.button} onClick={copyFen}>
+          {copied ? 'Copied!' : 'Copy FEN'}
         </button>
         <a href={chessComUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
           Practice on Chess.com

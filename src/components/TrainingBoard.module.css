@@ -12,7 +12,8 @@
 .board {
   width: 400px;
   height: auto;
-  border: 2px solid var(--text-primary);
+  border: 5px solid #E2B38D;
+  border-radius: 5px;
 }
 
 .actions {
