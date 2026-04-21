@@ -1,47 +1,72 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  border: 1px solid rgba(245, 232, 216, 0.12);
+  border-radius: 0.25rem;
+  overflow: hidden;
+  width: 260px;
+  transition: border-color 0.15s;
 }
 
-.title {
-  font-size: 1.25rem;
-  font-weight: 600;
+.card:hover {
+  border-color: rgba(226, 179, 141, 0.3);
 }
 
 .board {
-  width: 400px;
-  height: auto;
-  border: 5px solid #E2B38D;
-  border-radius: 5px;
+  width: 260px;
+  height: 260px;
+  display: block;
 }
 
-.actions {
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem 0.75rem;
+  border-top: 1px solid rgba(245, 232, 216, 0.08);
+}
+
+.title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.controls {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: 0.4rem;
 }
 
-.button {
-  padding: 0.5rem 1.25rem;
-  background-color: var(--text-primary);
-  color: var(--bg-primary);
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
+.btn {
+  background: rgba(245, 232, 216, 0.06);
+  border: 1px solid rgba(245, 232, 216, 0.14);
+  color: rgba(245, 232, 216, 0.85);
   cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  line-height: 1.4;
+  border-radius: 3px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s, background-color 0.15s, border-color 0.15s;
 }
 
-.button:hover:not(:disabled) {
-  opacity: 0.85;
+.btn:hover:not(:disabled) {
+  color: #E2B38D;
+  background-color: rgba(226, 179, 141, 0.08);
+  border-color: rgba(226, 179, 141, 0.3);
 }
 
-.button:disabled {
-  opacity: 0.5;
+.btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
-.link {
-  color: var(--text-primary);
+.btn.active {
+  color: #E2B38D;
+  border-color: rgba(226, 179, 141, 0.3);
 }

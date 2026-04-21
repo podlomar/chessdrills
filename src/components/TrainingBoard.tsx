@@ -31,36 +31,47 @@ export const TrainingBoard = ({ type, title }: Props) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const placement = position === 'loading' ? '' : position.fen.split(' ')[0];
-  const chessComUrl = `https://www.chess.com/practice/custom?fen=${encodeURIComponent(position === 'loading' ? '' : position.fen)}`;
-
-  if (position === 'loading') {
-    return (
-      <div className={styles.card}>
-        <h2 className={styles.title}>{title}</h2>
-        <img src="/placeholder-board.svg" className={styles.board} alt="Loading chess position" />
-      </div>
-    );
-  }
+  const isLoading = position === 'loading';
+  const placement = isLoading ? '' : position.fen.split(' ')[0];
+  const orientation = isLoading ? 'white' : position.turnColor;
+  const boardSrc = isLoading
+    ? '/placeholder-board.svg'
+    : `/board?fen=${placement}&orientation=${orientation}`;
+  const chessComUrl = isLoading
+    ? '#'
+    : `https://www.chess.com/practice/custom?fen=${encodeURIComponent(position.fen)}`;
+  const canRegenerate = !isLoading && position.randomized !== false;
 
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>{title}</h2>
-      <img
-        src={`/board?fen=${placement}&orientation=${position.turnColor}`}
-        className={styles.board}
-        alt={`${title} chess position`}
-      />
-      <div className={styles.actions}>
-        <button className={styles.button} onClick={regenerate} disabled={position.randomized === false}>
-          Regenerate
-        </button>
-        <button className={styles.button} onClick={copyFen}>
-          {copied ? 'Copied!' : 'Copy FEN'}
-        </button>
-        <a href={chessComUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
-          Practice on Chess.com
-        </a>
+      <img src={boardSrc} className={styles.board} alt={isLoading ? 'Loading…' : title} />
+      <div className={styles.info}>
+        <span className={styles.title}>{title}</span>
+        <div className={styles.controls}>
+          <button
+            className={styles.btn}
+            onClick={regenerate}
+            disabled={!canRegenerate}
+          >
+            ↺ New
+          </button>
+          <button
+            className={`${styles.btn}${copied ? ` ${styles.active}` : ''}`}
+            onClick={copyFen}
+            disabled={isLoading}
+          >
+            {copied ? '✓ Copied' : 'Copy FEN'}
+          </button>
+          <a
+            href={chessComUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.btn}
+            onClick={isLoading ? (e) => e.preventDefault() : undefined}
+          >
+            Chess.com ↗
+          </a>
+        </div>
       </div>
     </div>
   );
