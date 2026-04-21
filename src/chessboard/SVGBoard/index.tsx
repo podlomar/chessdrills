@@ -44,8 +44,6 @@ export const SVGBoard = ({ board, orientation = 'white' }: Props) => {
         const isLightSquare = board.squareColor(index) === 'light';
         const letter = piece !== null ? pieceLetter(piece) : null;
 
-        console.log(`Index: ${index}, Square: ${square}, Rank: ${rank}, File: ${file}, Piece: ${piece}, Symbol: ${letter}, Light Square: ${isLightSquare}`);
-
         return (
           <g key={`${rank}-${file}`}>
             {isLightSquare ? null : (
