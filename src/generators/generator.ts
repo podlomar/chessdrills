@@ -2,6 +2,7 @@ export interface Position {
   fen: string;
   turnColor: 'white' | 'black';
   randomized: boolean;
+  description: string;
 }
 
 export type Generator = {

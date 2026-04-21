@@ -47,6 +47,7 @@ export const TrainingBoard = ({ type, title }: Props) => {
       <img src={boardSrc} className={styles.board} alt={isLoading ? 'Loading…' : title} />
       <div className={styles.info}>
         <span className={styles.title}>{title}</span>
+        {!isLoading && <p className={styles.description}>{position.description}</p>}
         <div className={styles.controls}>
           <button
             className={styles.btn}

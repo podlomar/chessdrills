@@ -25,6 +25,7 @@ export const kq_vs_k = (): Position => {
       fen: board.toFen() + ' w - - 0 1',
       turnColor: 'white',
       randomized: true,
+      description: 'Use your king to push the enemy king to the edge, then deliver checkmate with the queen.',
     };
   }
 };
@@ -51,6 +52,7 @@ export const kr_vs_k = (): Position => {
       fen: board.toFen() + ' w - - 0 1',
       turnColor: 'white',
       randomized: true,
+      description: 'Use the rook to cut off ranks and files, then drive the enemy king to the edge with your king.',
     };
   }
 };
@@ -62,6 +64,7 @@ export const kp_vs_k = (): Position => {
     fen: '8/8/4k3/8/4P3/4K3/8/8 w - - 0 1',
     turnColor: 'white',
     randomized: false,
+    description: 'Advance the pawn to promotion. Watch out for the opposition — king position is everything.',
   };
 };
 
