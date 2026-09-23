@@ -8,8 +8,9 @@ its PR list and rules, including the README and plan update before each PR.
 
 ## Status
 
-- Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`.
-- Next: PR 3 `feat/chess-core`.
+- Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3 `feat/chess-core`.
+- Next: PR 4 `feat/board-rendering`. PR 7 `feat/opening-model` can also start
+  now, in parallel with the board PRs.
 
 ## Commands
 
@@ -37,8 +38,13 @@ npm run typecheck  # tsc -b
 
 - The `@/` alias is defined only in `tsconfig.app.json`; Vite reads it via
   `resolve.tsconfigPaths`.
-- Layer folders `chess/`, `openings/` and `trainer/` do not exist yet; the
-  import rules in `biome.json` already target them.
+- Folders `openings/` and `trainer/` do not exist yet; the import rules in
+  `biome.json` already target them.
+- `Position` rebuilds chess.js from the FEN on every move, so `isGameOver`
+  never detects threefold repetition. The fifty-move rule still works.
+- `play` returns `undefined` for a promotion move without a `promotion` piece;
+  the board needs to ask for one. `playSan` accepts `+`, `#` and `!`
+  suffixes but not move numbers; stripping those is the opening parser's job.
 - `useTheme` sets the `theme-color` meta from the body's computed background,
   because `light-dark()` custom properties do not resolve to a color value.
 - The repo sits in a shared directory. Some files may be owned by another user

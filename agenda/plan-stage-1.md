@@ -474,7 +474,7 @@ Color tokens, dark mode, and the theme switcher.
 *Review focus:* no component references a palette token, and all text/background pairs meet AA contrast in both themes. Also check that reloading in dark mode shows no flash.
 *Done when:* the shell looks right in both themes, follows the OS setting live, and remembers a manual override.
 
-### PR 3 — `feat/chess-core`
+### PR 3 — `feat/chess-core` — **done**
 
 Our own chess vocabulary and an immutable `Position` over chess.js.
 
