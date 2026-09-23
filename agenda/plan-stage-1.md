@@ -27,9 +27,10 @@ Swap `--public` for `--private` if you prefer. Vite accepts the cloned folder be
 | `<title>` and header wordmark | `chessdrills` |
 | Web app manifest | `name` and `short_name`: `chessdrills` |
 | `localStorage` keys | prefixed `chessdrills:` (e.g. `chessdrills:theme`) |
-| Vite `base` for GitHub Pages | `/chessdrills/` |
+| Production domain | `chessdrills.podlomar.me` (served at the root, so Vite's `base` stays `/`) |
+| uncloud service | `chessdrills` |
 
-The storage prefix matters: every repo deployed at `<user>.github.io` shares one origin, and therefore one `localStorage`.
+The storage prefix matters: every Vite project run on `localhost:5173` during development shares one origin, and therefore one `localStorage`.
 
 ---
 
@@ -642,13 +643,23 @@ Choose what to train.
 
 Routes are `#/` (library), `#/play` (free play) and `#/train/<openingId>`. The router is hash-based and about 30 lines of your own code, so it works on any static host with no server config. You can swap in `preact-iso` later if you outgrow it.
 
-### PR 12 — `chore/deploy` (optional)
+### PR 12 — `chore/deploy`
 
-Make it live and installable on a phone.
+Make it live at `https://chessdrills.podlomar.me` and installable on a phone. It deploys with [uncloud](https://uncloud.run) to the user's own server. That cluster was initialised with `uc machine init --no-dns`, so there is no `*.uncld.dev` domain and DNS is managed by hand.
 
 1. `chore: add chessdrills web app manifest, icons and theme color`
-2. `chore: set Vite base to /chessdrills/ for GitHub Pages`
-3. `ci: build and deploy main to GitHub Pages`
+2. `chore: add Dockerfile that serves the production build`
+3. `chore: add uncloud compose file for chessdrills.podlomar.me`
+4. `docs: add deployment runbook`
+
+Notes:
+- **Image.** A multi-stage `Dockerfile`: `node` runs `npm ci && npm run build`, then a small static server (for example `caddy:alpine` with `caddy file-server`) serves `dist/` on port `8000`. Add a `.dockerignore` for `node_modules`, `dist` and `.git`. Vite hashes asset file names, so `assets/` can be cached forever and `index.html` should not be cached.
+- **Compose.** `compose.yaml` has one service, `chessdrills`, with `build: .` and `x-ports: [chessdrills.podlomar.me:8000/https]`. uncloud's Caddy terminates TLS and gets the certificate itself.
+- **DNS.** Because of `--no-dns`, an `A` record for `chessdrills.podlomar.me` must point at the server's public IP before the first deploy, or the certificate request fails.
+- **Deploying.** Run `uc deploy` from the repo root, from a machine that has the cluster context (or with `--connect`) and a local Docker. It builds the image, tags it with the git date and SHA, pushes only the missing layers straight to the server (no registry), and rolls the container over.
+- **CI** is out of scope for now: deploys are run by hand. Deploying from GitHub Actions later would need an SSH key for `uc --connect` as a repository secret.
+
+*Review focus:* the runbook. Someone with the cluster context and no other knowledge should be able to deploy from it.
 
 ---
 
