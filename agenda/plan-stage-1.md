@@ -138,6 +138,7 @@ Each semantic token is written once with `light-dark()`, and `color-scheme` on `
   --board-light: #ed8d8d;
   --board-dark: #8d6262;
   --board-frame: #4d4545;
+  --board-coordinate: #f2b0b0;
   --board-last-move: rgb(255 214 0 / 0.4);
   --board-selected: rgb(20 85 30 / 0.5);
 }
@@ -185,7 +186,7 @@ export function applyPreference(root: HTMLElement, preference: ThemePreference):
 
 ### 4.4 Board style
 
-The desired look lives in `chess-style/`. It is the reference for PR 4 and is not imported by the app directly.
+The desired look lives in `chess-style/`. The images there are references only. PR 4 moved the piece SVGs and `README.txt` to `src/board/pieces/`.
 
 | File | What it shows |
 |---|---|
@@ -195,8 +196,8 @@ The desired look lives in `chess-style/`. It is the reference for PR 4 and is no
 | `copper_border.png` | The same squares inside a `#4d4545` frame |
 | `copper_bg.png` | The frame color alone |
 
-- The frame is 40px on each side of the 1200px image, so it is **1/30 of the board's outer size**. It scales with the board, so derive it from the board's size, not from a fixed spacing token.
-- The frame is too thin for labels. Rank and file coordinates sit **inside** the edge squares, each drawn in the opposite square color.
+- In the 1200px image the frame is 40px on each side, which is 1/30 of the board's outer size. The app widens it to **1/20** so the coordinates on it stay readable on phones. It scales with the board, so derive it from the board's size, not from a fixed spacing token.
+- Rank and file coordinates sit **on the frame**: ranks down the left side and files along the bottom, each centered on its rank or file. They use `--board-coordinate`, a lighter step of the copper pink at 5.15:1 against the frame. The text is 3/4 of the frame's thickness, about 13px on a 390px phone.
 - The last-move and selection overlays predate this style. Tune them against the copper squares when they arrive in PR 5.
 
 ---
@@ -502,16 +503,18 @@ Our own chess vocabulary and an immutable `Position` over chess.js.
 
 *Review focus:* the size of the public API. Nothing outside `chess/` should need chess.js types.
 
-### PR 4 — `feat/board-rendering`
+### PR 4 — `feat/board-rendering` — **done**
 
 A static board that renders any `Position`.
 
 1. `feat(board): add Merida piece set and Piece component`
 2. `feat(board): render 8×8 grid of squares from a Position`
 3. `style(board): add copper square colors and frame`
-4. `feat(board): add rank and file coordinates`
+4. `feat(board): add rank and file coordinates` (on the squares first; commit 7 moved them onto the frame)
 5. `feat(board): support flipped orientation`
 6. `style(board): size board to the viewport`
+7. `feat(board): move coordinates onto the board frame`
+8. `style(board): widen the frame to fit readable coordinates`
 
 Notes:
 - Pieces are the Merida set from `chess-style/` (§4.4). Move the twelve SVGs to `src/board/pieces/` with their names unchanged, and keep `README.txt` next to them as the attribution and license file.
