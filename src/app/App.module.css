@@ -1,0 +1,29 @@
+.shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-block-size: 100svh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  block-size: calc(var(--header-block-size) + env(safe-area-inset-top));
+  padding-block-start: env(safe-area-inset-top);
+  padding-inline: max(var(--space-4), env(safe-area-inset-left))
+    max(var(--space-4), env(safe-area-inset-right));
+}
+
+.wordmark {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.main {
+  inline-size: 100%;
+  max-inline-size: var(--content-max-inline-size);
+  margin-inline: auto;
+  padding-block: var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
+  padding-inline: max(var(--space-4), env(safe-area-inset-left))
+    max(var(--space-4), env(safe-area-inset-right));
+}
