@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import styles from '@/board/Board.module.css';
 import { layoutBoard } from '@/board/layout.ts';
+import { PromotionPicker } from '@/board/PromotionPicker.tsx';
 import { type Destination, Square } from '@/board/Square.tsx';
 import { type Movable, resolveTap } from '@/board/tap.ts';
 import type { Position } from '@/chess/position.ts';
@@ -18,6 +19,12 @@ interface BoardProps {
 interface Selection {
   position: Position;
   square: ChessSquare;
+}
+
+interface PendingPromotion {
+  position: Position;
+  from: ChessSquare;
+  to: ChessSquare;
 }
 
 const destinationsFrom = (
@@ -45,7 +52,9 @@ export function Board({
   const { squares, files, ranks } = layoutBoard(orientation);
   // Tagging the selection with its position drops it as soon as a new position arrives.
   const [selection, setSelection] = useState<Selection>();
+  const [promotion, setPromotion] = useState<PendingPromotion>();
   const selected = selection?.position === position ? selection.square : undefined;
+  const pending = promotion?.position === position ? promotion : undefined;
   const destinations = destinationsFrom(position, selected);
 
   const tap = (square: ChessSquare): void => {
@@ -53,6 +62,9 @@ export function Board({
     setSelection(result.kind === 'select' ? { position, square: result.square } : undefined);
     if (result.kind === 'move') {
       onMove(result.intent);
+    }
+    if (result.kind === 'promote') {
+      setPromotion({ position, from: result.from, to: result.to });
     }
   };
 
@@ -78,6 +90,16 @@ export function Board({
             );
           })}
         </fieldset>
+        {pending && (
+          <PromotionPicker
+            color={position.turn}
+            onPick={(kind) => {
+              setPromotion(undefined);
+              onMove({ from: pending.from, to: pending.to, promotion: kind });
+            }}
+            onCancel={() => setPromotion(undefined)}
+          />
+        )}
         <div class={`${styles.coordinates} ${styles.ranks}`} aria-hidden="true">
           {ranks.map((rank) => (
             <span key={rank}>{rank}</span>
