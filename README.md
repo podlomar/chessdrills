@@ -11,9 +11,9 @@ its PR list and rules, including the README and plan update before each PR.
 - Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3
   `feat/chess-core`, PR 4 `feat/board-rendering`, PR 5
   `feat/board-tap-to-move`, PR 7 `feat/opening-model`, PR 8
-  `feat/opening-library`, plus the board style in plan §4.4. PR 6
-  (drag-to-move) is dropped.
-- Next: PR 9 `feat/trainer-logic`.
+  `feat/opening-library`, PR 9 `feat/trainer-logic`, plus the board style in
+  plan §4.4. PR 6 (drag-to-move) is dropped.
+- Next: PR 10 `feat/trainer-screen`.
 
 ## Commands
 
@@ -57,8 +57,12 @@ npm run typecheck  # tsc -b
 
 - The `@/` alias is defined only in `tsconfig.app.json`; Vite reads it via
   `resolve.tsconfigPaths`.
-- Folder `trainer/` does not exist yet; the import rules in `biome.json`
-  already target it.
+- `pickWeighted` returns `T | undefined` (empty list) instead of the plan's
+  `T`. The session only asks for an opponent move when the node has children.
+- The reducer matches a player move against the tree by SAN. `session.ts`
+  uses `currentNode` from `selectors.ts`; the reverse import is type-only.
+- Tests get repeatable randomness from `src/testing/seededRandom.ts`
+  (mulberry32). The trainer screen should pass `Math.random` as its `Random`.
 - `compileOpening` returns `Result<Opening, OpeningError>`. The PR 8 library
   index has to unwrap it; `error.message` is written for humans and names the
   opening and the numbered path. Tests use `_unsafeUnwrap` and
