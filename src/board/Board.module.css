@@ -5,7 +5,7 @@
 }
 
 .frame {
-  --rim-size: calc(100cqi / 30);
+  --rim-size: calc(100cqi / 20);
 
   position: relative;
   padding: var(--rim-size);
