@@ -1,4 +1,4 @@
-import type { File, Rank, Square } from '@/chess/types.ts';
+import type { Color, File, Rank, Square } from '@/chess/types.ts';
 
 export type SquareTone = 'light' | 'dark';
 
@@ -15,9 +15,9 @@ const ranks: readonly Rank[] = ['1', '2', '3', '4', '5', '6', '7', '8'];
 const toneOf = (fileIndex: number, rankIndex: number): SquareTone =>
   (fileIndex + rankIndex) % 2 === 0 ? 'dark' : 'light';
 
-export const layoutSquares = (): readonly BoardSquare[] => {
-  const rows = [...ranks].reverse();
-  const columns = files;
+export const layoutSquares = (orientation: Color): readonly BoardSquare[] => {
+  const rows = orientation === 'white' ? [...ranks].reverse() : ranks;
+  const columns = orientation === 'white' ? files : [...files].reverse();
   return rows.flatMap((rank, row) =>
     columns.map((file, column) => ({
       square: `${file}${rank}` as const,

@@ -16,7 +16,7 @@ export function App() {
         <ThemeSwitcher preference={preference} onChange={setPreference} />
       </header>
       <main class={styles.main}>
-        <Board position={startPosition} />
+        <Board position={startPosition} orientation="white" />
       </main>
     </div>
   );
