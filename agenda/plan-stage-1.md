@@ -459,7 +459,7 @@ Project skeleton, tooling, design tokens, and an empty app shell.
 *Review focus:* the non-color token set in `tokens.css` (spacing scale, radii, type scale) and the viewport meta tag. Colors arrive in PR 2.
 *Done when:* `npm run dev`, `build`, `test` and `check` (Biome) all pass, importing `preact` from `chess/` fails the check, and the shell looks right on a phone.
 
-### PR 2 — `feat/dark-mode`
+### PR 2 — `feat/dark-mode` — **done**
 
 Color tokens, dark mode, and the theme switcher.
 
