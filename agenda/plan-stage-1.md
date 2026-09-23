@@ -45,7 +45,7 @@ The storage prefix matters: every repo deployed at `<user>.github.io` shares one
 | Tests | Vitest | Same config as Vite; test the pure domain logic |
 | Quality | Biome | One fast tool for linting and formatting TS, JSON and CSS (with CSS Modules support); formatting is never a review topic |
 
-**The board is hand-built, not chessground.** It's about 200 lines of code, it teaches you CSS Grid, pointer events, and accessibility, and you control every pixel of styling. Tap-to-move comes first (it's the best interaction on phones), and dragging is added later as a separate PR.
+**The board is hand-built, not chessground.** It's about 200 lines of code, it teaches you CSS Grid, pointer events, and accessibility, and you control every pixel of styling. Moves are made by tapping, which is the best interaction on phones. Dragging pieces is deliberately not supported.
 
 ---
 
@@ -462,7 +462,7 @@ Rewrite the README each time; don't append history to it.
 
 **Every PR is opened on GitHub** with `gh pr create`, from its branch against `master`. The description is short and straightforward: a few sentences or bullets saying what was done, plus anything that differs from this plan. Don't restate the commit list or the plan.
 
-Dependency order: **1 → 2 → 3 → 4 → 5**. After PR 3, the model work (**7 → 8 → 9**) can proceed in parallel with the board PRs. **10** needs 5, 8 and 9, and **11** comes after 10. PR 6 (drag) can land any time after 5.
+Dependency order: **1 → 2 → 3 → 4 → 5**. After PR 3, the model work (**7 → 8 → 9**) can proceed in parallel with the board PRs. **10** needs 5, 8 and 9, and **11** comes after 10. PR 6 is dropped.
 
 ### PR 1 — `chore/project-setup` — **done**
 
@@ -553,15 +553,9 @@ interface BoardProps {
 
 *Review focus:* the Board contains no game logic. It asks `position.legalMovesFrom` and emits intents.
 
-### PR 6 — `feat/board-drag` (optional)
+### PR 6 — dropped
 
-Drag pieces in addition to tap-to-move.
-
-1. `feat(board): drag pieces with pointer events`
-2. `feat(board): show dragged piece under the pointer and highlight target`
-3. `fix(board): cancel drag on escape or release outside the board`
-
-*Review focus:* pointer capture, and making sure tap-to-move still works unchanged.
+Drag-to-move is not wanted, so there is no PR 6. The number is kept so the later PR numbers stay stable.
 
 ### PR 7 — `feat/opening-model`
 
