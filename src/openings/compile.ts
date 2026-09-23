@@ -3,7 +3,7 @@ import { type Position, positionFromFen } from '@/chess/position.ts';
 import type { Move } from '@/chess/types.ts';
 import type { OpeningError } from '@/openings/errors.ts';
 import { parseMoves } from '@/openings/moves.ts';
-import type { Annotation, LineSpec, OpeningSpec } from '@/openings/spec.ts';
+import type { Annotation, LineSpec, OpeningSpec, ResourceLink } from '@/openings/spec.ts';
 import type { MoveNode, NodeId, Opening, PositionNode } from '@/openings/tree.ts';
 
 interface DraftNode {
@@ -21,6 +21,54 @@ interface DraftMove extends DraftNode {
 
 const childId = (parent: DraftNode, move: Move): NodeId =>
   parent.id === '' ? move.san : `${parent.id} ${move.san}`;
+
+const sameLinks = (a: readonly ResourceLink[] = [], b: readonly ResourceLink[] = []): boolean =>
+  a.length === b.length &&
+  a.every(
+    (link, index) =>
+      link.kind === b[index]?.kind && link.label === b[index].label && link.url === b[index].url,
+  );
+
+const sameAnnotation = (a: Annotation, b: Annotation): boolean =>
+  a.name === b.name && a.comment === b.comment && sameLinks(a.links, b.links);
+
+const mergeWeight = (node: DraftMove, weight: number | undefined): Result<void, OpeningError> => {
+  if (weight === undefined || node.weight === weight) {
+    return ok();
+  }
+  if (node.weight !== undefined) {
+    return err({ kind: 'conflictingWeight' });
+  }
+  node.weight = weight;
+  return ok();
+};
+
+const mergeNote = (node: DraftNode, note: Annotation | undefined): Result<void, OpeningError> => {
+  if (note === undefined) {
+    return ok();
+  }
+  if (node.annotation && !sameAnnotation(node.annotation, note)) {
+    return err({ kind: 'conflictingNote' });
+  }
+  node.annotation = note;
+  return ok();
+};
+
+const findOrAddChild = (parent: DraftNode, move: Move, position: Position): DraftMove => {
+  const existing = parent.children.find((child) => child.move.san === move.san);
+  if (existing) {
+    return existing;
+  }
+  const child: DraftMove = {
+    id: childId(parent, move),
+    position,
+    ply: parent.ply + 1,
+    move,
+    children: [],
+  };
+  parent.children.push(child);
+  return child;
+};
 
 const compileLines = (
   parent: DraftNode,
@@ -46,19 +94,14 @@ const compileLine = (parent: DraftNode, line: LineSpec): Result<void, OpeningErr
     if (!played) {
       return err({ kind: 'illegalMove', san });
     }
-    const child: DraftMove = {
-      id: childId(node, played.move),
-      position: played.position,
-      ply: node.ply + 1,
-      move: played.move,
-      weight: index === 0 ? line.weight : undefined,
-      children: [],
-    };
-    node.children.push(child);
+    const child = findOrAddChild(node, played.move, played.position);
+    const merged = mergeWeight(child, index === 0 ? line.weight : undefined);
+    if (merged.isErr()) {
+      return merged;
+    }
     node = child;
   }
-  node.annotation = line.note;
-  return compileLines(node, line.branches ?? []);
+  return mergeNote(node, line.note).andThen(() => compileLines(node, line.branches ?? []));
 };
 
 const freezeChildren = (parent: DraftNode): readonly MoveNode[] =>
