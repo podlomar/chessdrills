@@ -3,6 +3,7 @@ import { Board } from '@/board/Board.tsx';
 import { type PlayResult, type Position, positionFromFen } from '@/chess/position.ts';
 import type { Color, MoveIntent } from '@/chess/types.ts';
 import styles from '@/screens/FreePlay.module.css';
+import { BoardLayout } from '@/ui/BoardLayout.tsx';
 import { Button } from '@/ui/Button.tsx';
 
 const startPosition = positionFromFen();
@@ -31,14 +32,18 @@ export function FreePlay() {
   };
 
   return (
-    <section class={styles.screen} aria-label="Free play">
-      <Board
-        position={position}
-        orientation="white"
-        movable="both"
-        lastMove={last?.move}
-        onMove={move}
-      />
+    <BoardLayout
+      label="Free play"
+      board={
+        <Board
+          position={position}
+          orientation="white"
+          movable="both"
+          lastMove={last?.move}
+          onMove={move}
+        />
+      }
+    >
       <div class={styles.controls}>
         <p class={styles.status} role="status">
           {describeStatus(position)}
@@ -50,6 +55,6 @@ export function FreePlay() {
           Reset
         </Button>
       </div>
-    </section>
+    </BoardLayout>
   );
 }

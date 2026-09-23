@@ -1,16 +1,7 @@
-.screen {
-  --board-reserved-block-size: calc(var(--tap-target-size) + var(--space-4));
-
-  display: grid;
-  gap: var(--space-4);
-}
-
 .controls {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  inline-size: min(100%, 100svh - var(--chrome-block-size) - var(--board-reserved-block-size));
-  margin-inline: auto;
 }
 
 .status {
@@ -20,16 +11,8 @@
 }
 
 @media (orientation: landscape) and (height < 36rem) {
-  .screen {
-    --board-reserved-block-size: 0px;
-
-    grid-template-columns: 1fr auto;
-    align-items: start;
-  }
-
   .controls {
     flex-direction: column;
     align-items: stretch;
-    inline-size: auto;
   }
 }
