@@ -11,9 +11,10 @@ its PR list and rules, including the README and plan update before each PR.
 - Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3
   `feat/chess-core`, PR 4 `feat/board-rendering`, PR 5
   `feat/board-tap-to-move`, PR 7 `feat/opening-model`, PR 8
-  `feat/opening-library`, PR 9 `feat/trainer-logic`, plus the board style in
-  plan §4.4. PR 6 (drag-to-move) is dropped.
-- Next: PR 10 `feat/trainer-screen`.
+  `feat/opening-library`, PR 9 `feat/trainer-logic`, PR 10
+  `feat/trainer-screen`, plus the board style in plan §4.4. PR 6
+  (drag-to-move) is dropped.
+- Next: PR 11 `feat/opening-picker`.
 
 ## Commands
 
@@ -50,6 +51,9 @@ npm run typecheck  # tsc -b
   per the user's coding style; the plan's §5.3 now shows this API. It also
   added `Position.moveNumber` and `isValidFen` so errors can number moves and
   reject a bad `startFen` without chess.js throwing.
+- PR 10's "restart" button is **Repeat line**, which replays the same
+  opponent choices; **Next line** starts a new random line. That needs the
+  `replay` option described in plan PR 10.
 - The board sits in `<fieldset aria-label="Chessboard">`, not a `div` with
   `role="group"`, because Biome's `useSemanticElements` requires it.
 
@@ -83,7 +87,19 @@ npm run typecheck  # tsc -b
   suffixes but not move numbers; stripping those is the opening parser's job.
 - `useTheme` sets the `theme-color` meta from the body's computed background,
   because `light-dark()` custom properties do not resolve to a color value.
-- `App` renders `FreePlay` directly until PR 11 adds the router.
+- `App` renders the `Trainer` for a hard-coded Open Sicilian until PR 11
+  adds the router. `FreePlay` is unreachable until then. A compile error
+  renders as an alert with the compiler's message.
+- `ui/BoardLayout` is the shared board-plus-side-panel layout of `FreePlay`
+  and `Trainer`. It reserves room under the board in portrait and puts the
+  panel beside the board on short landscape screens.
+- `Trainer` memoizes the current `Position` per node. The Board tags its
+  selection with the `Position` object, so a fresh one on every render would
+  drop the selection.
+- The hint (expected from-squares) is UI state in `Trainer`, tied to the node
+  it was asked for. "Show hint" also dismisses the mistake.
+- Browser checks drive the preview build with puppeteer and pin
+  `Math.random` in the page to get a known opponent line.
 - Tap handling is the pure `resolveTap` in `board/tap.ts`. The Board keeps its
   selection and pending promotion tagged with the `Position` they belong to,
   so a new position clears them without an effect.
