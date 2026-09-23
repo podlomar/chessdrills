@@ -1,7 +1,7 @@
 import { err, ok, type Result } from 'neverthrow';
-import { type Position, positionFromFen } from '@/chess/position.ts';
+import { isValidFen, type Position, positionFromFen } from '@/chess/position.ts';
 import type { Move } from '@/chess/types.ts';
-import type { OpeningError } from '@/openings/errors.ts';
+import { type OpeningError, type OpeningProblem, toOpeningError } from '@/openings/errors.ts';
 import { parseMoves } from '@/openings/moves.ts';
 import type { Annotation, LineSpec, OpeningSpec, ResourceLink } from '@/openings/spec.ts';
 import type { MoveNode, NodeId, Opening, PositionNode } from '@/openings/tree.ts';
@@ -19,6 +19,12 @@ interface DraftMove extends DraftNode {
   weight?: number;
 }
 
+// Where a problem happened: the node it was found at, not yet tied to an opening.
+interface Located {
+  node: DraftNode;
+  problem: OpeningProblem;
+}
+
 const childId = (parent: DraftNode, move: Move): NodeId =>
   parent.id === '' ? move.san : `${parent.id} ${move.san}`;
 
@@ -32,23 +38,23 @@ const sameLinks = (a: readonly ResourceLink[] = [], b: readonly ResourceLink[] =
 const sameAnnotation = (a: Annotation, b: Annotation): boolean =>
   a.name === b.name && a.comment === b.comment && sameLinks(a.links, b.links);
 
-const mergeWeight = (node: DraftMove, weight: number | undefined): Result<void, OpeningError> => {
+const mergeWeight = (node: DraftMove, weight: number | undefined): Result<void, Located> => {
   if (weight === undefined || node.weight === weight) {
     return ok();
   }
   if (node.weight !== undefined) {
-    return err({ kind: 'conflictingWeight' });
+    return err({ node, problem: { kind: 'conflictingWeight' } });
   }
   node.weight = weight;
   return ok();
 };
 
-const mergeNote = (node: DraftNode, note: Annotation | undefined): Result<void, OpeningError> => {
+const mergeNote = (node: DraftNode, note: Annotation | undefined): Result<void, Located> => {
   if (note === undefined) {
     return ok();
   }
   if (node.annotation && !sameAnnotation(node.annotation, note)) {
-    return err({ kind: 'conflictingNote' });
+    return err({ node, problem: { kind: 'conflictingNote' } });
   }
   node.annotation = note;
   return ok();
@@ -70,10 +76,7 @@ const findOrAddChild = (parent: DraftNode, move: Move, position: Position): Draf
   return child;
 };
 
-const compileLines = (
-  parent: DraftNode,
-  lines: readonly LineSpec[],
-): Result<void, OpeningError> => {
+const compileLines = (parent: DraftNode, lines: readonly LineSpec[]): Result<void, Located> => {
   for (const line of lines) {
     const compiled = compileLine(parent, line);
     if (compiled.isErr()) {
@@ -83,16 +86,16 @@ const compileLines = (
   return ok();
 };
 
-const compileLine = (parent: DraftNode, line: LineSpec): Result<void, OpeningError> => {
+const compileLine = (parent: DraftNode, line: LineSpec): Result<void, Located> => {
   const sans = parseMoves(line.moves);
   if (sans.length === 0) {
-    return err({ kind: 'emptyLine' });
+    return err({ node: parent, problem: { kind: 'emptyLine' } });
   }
   let node = parent;
   for (const [index, san] of sans.entries()) {
     const played = node.position.playSan(san);
     if (!played) {
-      return err({ kind: 'illegalMove', san });
+      return err({ node, problem: { kind: 'illegalMove', san } });
     }
     const child = findOrAddChild(node, played.move, played.position);
     const merged = mergeWeight(child, index === 0 ? line.weight : undefined);
@@ -126,14 +129,24 @@ const indexNodes = (root: PositionNode): ReadonlyMap<NodeId, PositionNode> => {
   return nodes;
 };
 
+const pathOf = (node: DraftNode): readonly string[] => (node.id === '' ? [] : node.id.split(' '));
+
 export const compileOpening = (spec: OpeningSpec): Result<Opening, OpeningError> => {
+  if (spec.startFen !== undefined && !isValidFen(spec.startFen)) {
+    const start = { moveNumber: 1, turn: 'white' } as const;
+    return err(toOpeningError(spec.id, start, [], { kind: 'invalidStartFen', fen: spec.startFen }));
+  }
   const draft: DraftNode = {
     id: '',
     position: positionFromFen(spec.startFen),
     ply: 0,
     children: [],
   };
-  return compileLines(draft, spec.lines).map(() => {
+  const start = { moveNumber: draft.position.moveNumber, turn: draft.position.turn };
+  const compiled = compileLines(draft, spec.lines).mapErr(({ node, problem }) =>
+    toOpeningError(spec.id, start, pathOf(node), problem),
+  );
+  return compiled.map(() => {
     const root: PositionNode = {
       id: draft.id,
       fen: draft.position.fen,
