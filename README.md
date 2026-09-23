@@ -10,9 +10,9 @@ its PR list and rules, including the README and plan update before each PR.
 
 - Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3
   `feat/chess-core`, PR 4 `feat/board-rendering`, PR 5
-  `feat/board-tap-to-move`, plus the board style in plan §4.4.
-- Next: PR 7 `feat/opening-model`. PR 6 `feat/board-drag` is optional and can
-  land any time.
+  `feat/board-tap-to-move`, PR 7 `feat/opening-model`, plus the board style in
+  plan §4.4. PR 6 (drag-to-move) is dropped.
+- Next: PR 8 `feat/opening-library`.
 
 ## Commands
 
@@ -45,6 +45,10 @@ npm run typecheck  # tsc -b
   the same Board API as `lastMove`.
 - In PR 5, `FreePlay` puts its controls beside the board on short landscape
   screens (height under 36rem), so the board keeps the full height.
+- PR 7 returns compile errors as `neverthrow` Results rather than throwing,
+  per the user's coding style; the plan's §5.3 now shows this API. It also
+  added `Position.moveNumber` and `isValidFen` so errors can number moves and
+  reject a bad `startFen` without chess.js throwing.
 - The board sits in `<fieldset aria-label="Chessboard">`, not a `div` with
   `role="group"`, because Biome's `useSemanticElements` requires it.
 
@@ -52,8 +56,12 @@ npm run typecheck  # tsc -b
 
 - The `@/` alias is defined only in `tsconfig.app.json`; Vite reads it via
   `resolve.tsconfigPaths`.
-- Folders `openings/` and `trainer/` do not exist yet; the import rules in
-  `biome.json` already target them.
+- Folder `trainer/` does not exist yet; the import rules in `biome.json`
+  already target it.
+- `compileOpening` returns `Result<Opening, OpeningError>`. The PR 8 library
+  index has to unwrap it; `error.message` is written for humans and names the
+  opening and the numbered path. Tests use `_unsafeUnwrap` and
+  `_unsafeUnwrapErr`.
 - `Position` rebuilds chess.js from the FEN on every move, so `isGameOver`
   never detects threefold repetition. The fifty-move rule still works.
 - `play` returns `undefined` for a promotion move without a `promotion` piece;

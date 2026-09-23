@@ -250,6 +250,7 @@ export type Fen = string;
 export interface Position {
   readonly fen: Fen;
   readonly turn: Color;
+  readonly moveNumber: number;
   readonly inCheck: boolean;
   readonly isGameOver: boolean;
   pieceAt(square: Square): Piece | undefined;
@@ -264,6 +265,7 @@ export interface PlayResult {
 }
 
 export function positionFromFen(fen?: Fen): Position;
+export function isValidFen(fen: Fen): boolean;
 ```
 
 ### 5.3 Opening lines — two representations
@@ -315,7 +317,7 @@ Semantics (put these in the compiler's tests, not in comments):
 - `note` describes the **position at the end of the segment**. If you want to annotate a position in the middle of a segment, split it there. Notes belong to positions, not to typing convenience.
 - `weight` applies to the **first move** of the segment (that's where the choice happens). It is used only when the opponent picks among siblings. The default is `1`.
 - `side` is the color *you* play. All moves of the other color are opponent choices.
-- If siblings start with the same move, they are **merged**, so you can write lines flat or nested as you prefer. If the merged nodes have conflicting annotations, compilation fails.
+- If siblings start with the same move, they are **merged**, so you can write lines flat or nested as you prefer. If the merged nodes have conflicting annotations, or conflicting explicit weights on the shared move, compilation fails. A weight or note given on only one side is kept.
 
 #### Example (`openings/library/open-sicilian.ts`)
 
@@ -386,7 +388,27 @@ export interface Opening {
   nodes: ReadonlyMap<NodeId, PositionNode>;
 }
 
-export function compileOpening(spec: OpeningSpec): Opening;
+export function compileOpening(spec: OpeningSpec): Result<Opening, OpeningError>;
+```
+
+Compilation returns a `neverthrow` `Result` instead of throwing (`openings/errors.ts`):
+
+```ts
+export type OpeningProblem =
+  | { kind: 'invalidStartFen'; fen: string }
+  | { kind: 'emptyLine' }
+  | { kind: 'illegalMove'; san: string }
+  | { kind: 'conflictingNote' }
+  | { kind: 'conflictingWeight' };
+
+export type OpeningError = OpeningProblem & {
+  openingId: string;
+  path: readonly string[];
+  message: string;
+};
+```
+
+`path` holds the SAN moves leading to the problem. `message` numbers them, e.g. `open-sicilian: illegal move 8...Nf6 after 1.e4 c5 2.Nf3 d6 … 8.f3`.
 ```
 
 **Why a `NodeId` equal to the SAN path** (`""`, `"e4"`, `"e4 c5 Nf3"`)? It's human-readable in tests and debugging, and it's **stable**. When stage 2 adds progress tracking or spaced repetition, you can store stats keyed by `openingId + nodeId` without any migration.
@@ -557,7 +579,7 @@ interface BoardProps {
 
 Drag-to-move is not wanted, so there is no PR 6. The number is kept so the later PR numbers stay stable.
 
-### PR 7 — `feat/opening-model`
+### PR 7 — `feat/opening-model` — **done**
 
 Spec types, the runtime tree, and the compiler.
 
