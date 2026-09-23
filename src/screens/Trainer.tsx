@@ -2,9 +2,10 @@ import { useMemo, useReducer } from 'preact/hooks';
 import { Board } from '@/board/Board.tsx';
 import type { MoveIntent } from '@/chess/types.ts';
 import type { Opening } from '@/openings/tree.ts';
+import { LineInfo } from '@/screens/LineInfo.tsx';
 import styles from '@/screens/Trainer.module.css';
 import { useOpponentMove } from '@/screens/useOpponentMove.ts';
-import { currentNode, currentPosition } from '@/trainer/selectors.ts';
+import { breadcrumb, currentNode, currentPosition, visibleNotes } from '@/trainer/selectors.ts';
 import { type Phase, sessionReducer, startSession } from '@/trainer/session.ts';
 import { BoardLayout } from '@/ui/BoardLayout.tsx';
 
@@ -52,6 +53,7 @@ export function Trainer({ opening }: TrainerProps) {
       <p class={styles.status} role="status">
         {statusText[session.phase.kind]}
       </p>
+      <LineInfo names={breadcrumb(session)} notes={visibleNotes(session)} />
     </BoardLayout>
   );
 }
