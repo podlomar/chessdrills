@@ -1,5 +1,7 @@
 import { render } from 'preact';
-import './index.css';
+import '@/styles/reset.css';
+import '@/styles/tokens.css';
+import '@/styles/global.css';
 import { App } from '@/app.tsx';
 
 const root = document.getElementById('app');
