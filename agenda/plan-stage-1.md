@@ -443,7 +443,7 @@ Rewrite the README each time; don't append history to it.
 
 Dependency order: **1 → 2 → 3 → 4 → 5**. After PR 3, the model work (**7 → 8 → 9**) can proceed in parallel with the board PRs. **10** needs 5, 8 and 9, and **11** comes after 10. PR 6 (drag) can land any time after 5.
 
-### PR 1 — `chore/project-setup`
+### PR 1 — `chore/project-setup` — **done**
 
 Project skeleton, tooling, design tokens, and an empty app shell.
 
