@@ -1,4 +1,12 @@
 .shell {
+  --chrome-block-size: calc(
+    var(--header-block-size) +
+    env(safe-area-inset-top) +
+    var(--border-width) +
+    var(--space-4) +
+    max(var(--space-4), env(safe-area-inset-bottom))
+  );
+
   display: grid;
   grid-template-rows: auto 1fr;
   min-block-size: 100svh;

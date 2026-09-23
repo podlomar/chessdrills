@@ -1,6 +1,7 @@
 .board {
   container-type: inline-size;
-  inline-size: 100%;
+  inline-size: min(100%, 100svh - var(--chrome-block-size));
+  margin-inline: auto;
 }
 
 .grid {
