@@ -1,0 +1,41 @@
+.switcher {
+  display: inline-flex;
+  gap: var(--space-1);
+  min-inline-size: 0;
+  padding: var(--space-1);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: calc(var(--tap-target-size) - 2 * var(--space-1));
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.option:hover {
+  color: var(--color-text);
+}
+
+.option:has(:checked) {
+  background-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.option:has(:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-width);
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
