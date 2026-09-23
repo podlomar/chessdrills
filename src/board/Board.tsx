@@ -9,10 +9,12 @@ interface BoardProps {
 
 export function Board({ position }: BoardProps) {
   return (
-    <fieldset class={styles.board} aria-label="Chessboard">
-      {layoutSquares().map(({ square, tone }) => (
-        <Square key={square} square={square} tone={tone} piece={position.pieceAt(square)} />
-      ))}
-    </fieldset>
+    <div class={styles.board}>
+      <fieldset class={styles.grid} aria-label="Chessboard">
+        {layoutSquares().map(({ square, tone }) => (
+          <Square key={square} square={square} tone={tone} piece={position.pieceAt(square)} />
+        ))}
+      </fieldset>
+    </div>
   );
 }

@@ -1,10 +1,15 @@
 .board {
+  container-type: inline-size;
+  inline-size: 100%;
+}
+
+.grid {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  inline-size: 100%;
   aspect-ratio: 1;
   min-inline-size: 0;
-  padding: 0;
+  padding: calc(100cqi / 30);
   border: 0;
+  background-color: var(--board-frame);
 }
