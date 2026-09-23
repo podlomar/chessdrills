@@ -1,5 +1,10 @@
-import type { Color as ChessJsColor, Piece as ChessJsPiece, PieceSymbol } from 'chess.js';
-import type { Color, Piece, PieceKind, PromotionKind } from '@/chess/types.ts';
+import type {
+  Color as ChessJsColor,
+  Move as ChessJsMove,
+  Piece as ChessJsPiece,
+  PieceSymbol,
+} from 'chess.js';
+import type { Color, Move, Piece, PieceKind, PromotionKind } from '@/chess/types.ts';
 
 const pieceKinds: Record<PieceSymbol, PieceKind> = {
   p: 'pawn',
@@ -36,4 +41,14 @@ export const toPromotionSymbol = (kind: PromotionKind): PieceSymbol => promotion
 export const toPiece = (piece: ChessJsPiece): Piece => ({
   color: toColor(piece.color),
   kind: toPieceKind(piece.type),
+});
+
+export const toMove = (move: ChessJsMove): Move => ({
+  from: move.from,
+  to: move.to,
+  promotion: move.promotion && toPromotionKind(move.promotion),
+  san: move.san,
+  piece: { color: toColor(move.color), kind: toPieceKind(move.piece) },
+  captured: move.captured && toPieceKind(move.captured),
+  givesCheck: /[+#]$/.test(move.san),
 });
