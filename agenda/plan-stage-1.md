@@ -45,7 +45,7 @@ The storage prefix matters: every repo deployed at `<user>.github.io` shares one
 | Tests | Vitest | Same config as Vite; test the pure domain logic |
 | Quality | Biome | One fast tool for linting and formatting TS, JSON and CSS (with CSS Modules support); formatting is never a review topic |
 
-**The board is hand-built, not chessground.** It's about 200 lines of code, it teaches you CSS Grid, pointer events, and accessibility, and you control every pixel of styling. Tap-to-move comes first (it's the best interaction on phones), and dragging is added later as a separate PR.
+**The board is hand-built, not chessground.** It's about 200 lines of code, it teaches you CSS Grid, pointer events, and accessibility, and you control every pixel of styling. Moves are made by tapping, which is the best interaction on phones. Dragging pieces is deliberately not supported.
 
 ---
 
@@ -250,6 +250,7 @@ export type Fen = string;
 export interface Position {
   readonly fen: Fen;
   readonly turn: Color;
+  readonly moveNumber: number;
   readonly inCheck: boolean;
   readonly isGameOver: boolean;
   pieceAt(square: Square): Piece | undefined;
@@ -264,6 +265,7 @@ export interface PlayResult {
 }
 
 export function positionFromFen(fen?: Fen): Position;
+export function isValidFen(fen: Fen): boolean;
 ```
 
 ### 5.3 Opening lines — two representations
@@ -315,7 +317,7 @@ Semantics (put these in the compiler's tests, not in comments):
 - `note` describes the **position at the end of the segment**. If you want to annotate a position in the middle of a segment, split it there. Notes belong to positions, not to typing convenience.
 - `weight` applies to the **first move** of the segment (that's where the choice happens). It is used only when the opponent picks among siblings. The default is `1`.
 - `side` is the color *you* play. All moves of the other color are opponent choices.
-- If siblings start with the same move, they are **merged**, so you can write lines flat or nested as you prefer. If the merged nodes have conflicting annotations, compilation fails.
+- If siblings start with the same move, they are **merged**, so you can write lines flat or nested as you prefer. If the merged nodes have conflicting annotations, or conflicting explicit weights on the shared move, compilation fails. A weight or note given on only one side is kept.
 
 #### Example (`openings/library/open-sicilian.ts`)
 
@@ -386,7 +388,27 @@ export interface Opening {
   nodes: ReadonlyMap<NodeId, PositionNode>;
 }
 
-export function compileOpening(spec: OpeningSpec): Opening;
+export function compileOpening(spec: OpeningSpec): Result<Opening, OpeningError>;
+```
+
+Compilation returns a `neverthrow` `Result` instead of throwing (`openings/errors.ts`):
+
+```ts
+export type OpeningProblem =
+  | { kind: 'invalidStartFen'; fen: string }
+  | { kind: 'emptyLine' }
+  | { kind: 'illegalMove'; san: string }
+  | { kind: 'conflictingNote' }
+  | { kind: 'conflictingWeight' };
+
+export type OpeningError = OpeningProblem & {
+  openingId: string;
+  path: readonly string[];
+  message: string;
+};
+```
+
+`path` holds the SAN moves leading to the problem. `message` numbers them, e.g. `open-sicilian: illegal move 8...Nf6 after 1.e4 c5 2.Nf3 d6 … 8.f3`.
 ```
 
 **Why a `NodeId` equal to the SAN path** (`""`, `"e4"`, `"e4 c5 Nf3"`)? It's human-readable in tests and debugging, and it's **stable**. When stage 2 adds progress tracking or spaced repetition, you can store stats keyed by `openingId + nodeId` without any migration.
@@ -462,7 +484,7 @@ Rewrite the README each time; don't append history to it.
 
 **Every PR is opened on GitHub** with `gh pr create`, from its branch against `master`. The description is short and straightforward: a few sentences or bullets saying what was done, plus anything that differs from this plan. Don't restate the commit list or the plan.
 
-Dependency order: **1 → 2 → 3 → 4 → 5**. After PR 3, the model work (**7 → 8 → 9**) can proceed in parallel with the board PRs. **10** needs 5, 8 and 9, and **11** comes after 10. PR 6 (drag) can land any time after 5.
+Dependency order: **1 → 2 → 3 → 4 → 5**. After PR 3, the model work (**7 → 8 → 9**) can proceed in parallel with the board PRs. **10** needs 5, 8 and 9, and **11** comes after 10. PR 6 is dropped.
 
 ### PR 1 — `chore/project-setup` — **done**
 
@@ -553,17 +575,11 @@ interface BoardProps {
 
 *Review focus:* the Board contains no game logic. It asks `position.legalMovesFrom` and emits intents.
 
-### PR 6 — `feat/board-drag` (optional)
+### PR 6 — dropped
 
-Drag pieces in addition to tap-to-move.
+Drag-to-move is not wanted, so there is no PR 6. The number is kept so the later PR numbers stay stable.
 
-1. `feat(board): drag pieces with pointer events`
-2. `feat(board): show dragged piece under the pointer and highlight target`
-3. `fix(board): cancel drag on escape or release outside the board`
-
-*Review focus:* pointer capture, and making sure tap-to-move still works unchanged.
-
-### PR 7 — `feat/opening-model`
+### PR 7 — `feat/opening-model` — **done**
 
 Spec types, the runtime tree, and the compiler.
 

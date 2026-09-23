@@ -1,10 +1,11 @@
-import { Chess } from 'chess.js';
+import { Chess, validateFen } from 'chess.js';
 import { toColor, toMove, toPiece, toPromotionSymbol } from '@/chess/mapping.ts';
 import type { Color, Fen, Move, MoveIntent, Piece, Square } from '@/chess/types.ts';
 
 export interface Position {
   readonly fen: Fen;
   readonly turn: Color;
+  readonly moveNumber: number;
   readonly inCheck: boolean;
   readonly isGameOver: boolean;
   pieceAt(square: Square): Piece | undefined;
@@ -24,6 +25,7 @@ type ChessJsMoveInput = Parameters<Chess['move']>[0];
 class ChessJsPosition implements Position {
   public readonly fen: Fen;
   public readonly turn: Color;
+  public readonly moveNumber: number;
   public readonly inCheck: boolean;
   public readonly isGameOver: boolean;
   private readonly chess: Chess;
@@ -32,6 +34,7 @@ class ChessJsPosition implements Position {
     this.chess = chess;
     this.fen = chess.fen();
     this.turn = toColor(chess.turn());
+    this.moveNumber = chess.moveNumber();
     this.inCheck = chess.inCheck();
     this.isGameOver = chess.isGameOver();
   }
@@ -68,5 +71,7 @@ class ChessJsPosition implements Position {
     }
   }
 }
+
+export const isValidFen = (fen: Fen): boolean => validateFen(fen).ok;
 
 export const positionFromFen = (fen?: Fen): Position => new ChessJsPosition(new Chess(fen));
