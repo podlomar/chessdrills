@@ -3,21 +3,35 @@ import { Piece } from '@/board/Piece.tsx';
 import styles from '@/board/Square.module.css';
 import type { Piece as ChessPiece, Square as ChessSquare } from '@/chess/types.ts';
 
+export type Destination = 'move' | 'capture';
+
 interface SquareProps {
   square: ChessSquare;
   tone: SquareTone;
   piece?: ChessPiece;
+  selected: boolean;
+  destination?: Destination;
+  onTap: (square: ChessSquare) => void;
 }
 
 const describe = (square: ChessSquare, piece?: ChessPiece): string =>
   piece ? `${square}, ${piece.color} ${piece.kind}` : square;
 
-export function Square({ square, tone, piece }: SquareProps) {
+export function Square({ square, tone, piece, selected, destination, onTap }: SquareProps) {
+  const classes = [
+    styles.square,
+    styles[tone],
+    selected && styles.selected,
+    destination && styles[destination],
+  ];
+
   return (
     <button
       type="button"
-      class={`${styles.square} ${styles[tone]}`}
+      class={classes.filter(Boolean).join(' ')}
       aria-label={describe(square, piece)}
+      aria-pressed={selected}
+      onClick={() => onTap(square)}
     >
       {piece && <Piece piece={piece} />}
     </button>

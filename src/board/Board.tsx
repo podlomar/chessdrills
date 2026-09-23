@@ -1,23 +1,59 @@
+import { useState } from 'preact/hooks';
 import styles from '@/board/Board.module.css';
 import { layoutBoard } from '@/board/layout.ts';
-import { Square } from '@/board/Square.tsx';
+import { type Destination, Square } from '@/board/Square.tsx';
+import { type Movable, resolveTap } from '@/board/tap.ts';
 import type { Position } from '@/chess/position.ts';
-import type { Color } from '@/chess/types.ts';
+import type { Square as ChessSquare, Color } from '@/chess/types.ts';
 
 interface BoardProps {
   position: Position;
   orientation: Color;
+  movable: Movable;
 }
 
-export function Board({ position, orientation }: BoardProps) {
+interface Selection {
+  position: Position;
+  square: ChessSquare;
+}
+
+const destinationsFrom = (
+  position: Position,
+  square: ChessSquare | undefined,
+): ReadonlyMap<ChessSquare, Destination> =>
+  new Map(
+    (square ? position.legalMovesFrom(square) : []).map((move) => [
+      move.to,
+      move.captured ? 'capture' : 'move',
+    ]),
+  );
+
+export function Board({ position, orientation, movable }: BoardProps) {
   const { squares, files, ranks } = layoutBoard(orientation);
+  // Tagging the selection with its position drops it as soon as a new position arrives.
+  const [selection, setSelection] = useState<Selection>();
+  const selected = selection?.position === position ? selection.square : undefined;
+  const destinations = destinationsFrom(position, selected);
+
+  const tap = (square: ChessSquare): void => {
+    const result = resolveTap(position, movable, selected, square);
+    setSelection(result.kind === 'select' ? { position, square: result.square } : undefined);
+  };
 
   return (
     <div class={styles.board}>
       <div class={styles.frame}>
         <fieldset class={styles.squares} aria-label="Chessboard">
           {squares.map(({ square, tone }) => (
-            <Square key={square} square={square} tone={tone} piece={position.pieceAt(square)} />
+            <Square
+              key={square}
+              square={square}
+              tone={tone}
+              piece={position.pieceAt(square)}
+              selected={square === selected}
+              destination={destinations.get(square)}
+              onTap={tap}
+            />
           ))}
         </fieldset>
         <div class={`${styles.coordinates} ${styles.ranks}`} aria-hidden="true">
