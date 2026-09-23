@@ -3,9 +3,12 @@ import { Board } from '@/board/Board.tsx';
 import type { MoveIntent } from '@/chess/types.ts';
 import type { Opening } from '@/openings/tree.ts';
 import styles from '@/screens/Trainer.module.css';
+import { useOpponentMove } from '@/screens/useOpponentMove.ts';
 import { currentNode, currentPosition } from '@/trainer/selectors.ts';
 import { type Phase, sessionReducer, startSession } from '@/trainer/session.ts';
 import { BoardLayout } from '@/ui/BoardLayout.tsx';
+
+const OPPONENT_DELAY_MS = 500;
 
 interface TrainerProps {
   opening: Opening;
@@ -20,6 +23,7 @@ const statusText: Record<Phase['kind'], string> = {
 
 export function Trainer({ opening }: TrainerProps) {
   const [session, dispatch] = useReducer(sessionReducer, opening, startSession);
+  useOpponentMove(session, dispatch, { delayMs: OPPONENT_DELAY_MS, random: Math.random });
   const node = currentNode(session);
   // The Board ties its selection to the Position object, so keep it stable per node.
   const position = useMemo(() => currentPosition(session), [node]);
