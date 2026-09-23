@@ -650,16 +650,25 @@ Make it live at `https://chessdrills.podlomar.me` and installable on a phone. It
 1. `chore: add chessdrills web app manifest, icons and theme color`
 2. `chore: add Dockerfile that serves the production build`
 3. `chore: add uncloud compose file for chessdrills.podlomar.me`
-4. `docs: add deployment runbook`
+4. `ci: deploy master with uncloud after every merge`
+5. `docs: add deployment runbook`
 
 Notes:
 - **Image.** A multi-stage `Dockerfile`: `node` runs `npm ci && npm run build`, then a small static server (for example `caddy:alpine` with `caddy file-server`) serves `dist/` on port `8000`. Add a `.dockerignore` for `node_modules`, `dist` and `.git`. Vite hashes asset file names, so `assets/` can be cached forever and `index.html` should not be cached.
 - **Compose.** `compose.yaml` has one service, `chessdrills`, with `build: .` and `x-ports: [chessdrills.podlomar.me:8000/https]`. uncloud's Caddy terminates TLS and gets the certificate itself.
 - **DNS.** Because of `--no-dns`, an `A` record for `chessdrills.podlomar.me` must point at the server's public IP before the first deploy, or the certificate request fails.
 - **Deploying.** Run `uc deploy` from the repo root, from a machine that has the cluster context (or with `--connect`) and a local Docker. It builds the image, tags it with the git date and SHA, pushes only the missing layers straight to the server (no registry), and rolls the container over.
-- **CI** is out of scope for now: deploys are run by hand. Deploying from GitHub Actions later would need an SSH key for `uc --connect` as a repository secret.
+- **Continuous deployment.** `.github/workflows/deploy.yml` runs on every push to `master`, which is what merging a PR does. It uses `concurrency: { group: deploy, cancel-in-progress: false }`, so deploys run one at a time and none is cancelled halfway. The job:
+  1. checks out and runs `npm ci`, `check`, `typecheck` and `test`, so a broken merge never deploys;
+  2. loads `secrets.DEPLOY_SSH_KEY` into an ssh-agent (`webfactory/ssh-agent`) and appends `secrets.DEPLOY_KNOWN_HOSTS` to `~/.ssh/known_hosts`;
+  3. installs `uc` with `curl -fsS https://get.uncloud.run/install.sh | sh`;
+  4. runs `uc deploy --yes --connect ssh://${{ secrets.DEPLOY_TARGET }}`. The runner's Docker builds the image, and uncloud pushes it to the server over SSH.
+- **One-time setup** for the workflow, which goes in the runbook:
+  - a deploy-only key pair, with its public key in `authorized_keys` of a server user that can reach uncloud and Docker (the `uc machine init` user, or one in the same groups);
+  - repository secrets `DEPLOY_SSH_KEY` (private key), `DEPLOY_KNOWN_HOSTS` (output of `ssh-keyscan <server>`) and `DEPLOY_TARGET` (`user@host`), ideally on a `production` environment limited to `master`.
+- **To verify in this PR:** that `ssh://` uses the runner's OpenSSH client and so the agent's key (`ssh+go://` is uncloud's built-in client). If it doesn't, write the key to `~/.ssh/id_ed25519` instead. Manual `uc deploy` from a machine with the cluster context keeps working alongside CI.
 
-*Review focus:* the runbook. Someone with the cluster context and no other knowledge should be able to deploy from it.
+*Review focus:* the runbook and the workflow's secrets handling. Someone with the cluster context and no other knowledge should be able to set up CI or deploy by hand from the runbook.
 
 ---
 

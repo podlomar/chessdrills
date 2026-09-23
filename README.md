@@ -16,7 +16,8 @@ its PR list and rules, including the README and plan update before each PR.
   plan §4.4. PR 6 (drag-to-move) is dropped. Stage 1's required work is
   complete.
 - Also done: plan PR 12 rewritten to deploy with uncloud to
-  `chessdrills.podlomar.me` instead of GitHub Pages.
+  `chessdrills.podlomar.me` instead of GitHub Pages, with a GitHub Actions
+  workflow that deploys after every merge to `master`.
 - Next: PR 12 `chore/deploy`, or replacing the placeholder repertoires with
   the user's own lines.
 
