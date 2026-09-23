@@ -7,6 +7,11 @@
   border-radius: 0;
 }
 
+.square:focus-visible {
+  z-index: 1;
+  outline-offset: calc(-2 * var(--focus-ring-width));
+}
+
 .light {
   background-color: var(--board-light);
 }
