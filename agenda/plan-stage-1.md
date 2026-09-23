@@ -459,7 +459,7 @@ Weighted picker (`trainer/pick.ts`):
 
 ```ts
 export type Random = () => number;
-export function pickWeighted<T extends { weight: number }>(items: readonly T[], random: Random): T;
+export function pickWeighted<T extends { weight: number }>(items: readonly T[], random: Random): T | undefined;
 ```
 
 Rules:
@@ -468,6 +468,8 @@ Rules:
 - If a player move is not in the tree, the phase becomes `mistake`. The move is *not* added to the path, the board snaps back, and a hint (highlighting the expected from-squares) is UI-only state.
 - If a node has no children, the phase becomes `lineComplete`, whichever side moved last.
 - If you play Black, the session starts in the `opponentToMove` phase.
+- An action that doesn't fit the current phase returns the session unchanged. That includes an `opponentMoved` node that isn't a child of the current node.
+- `pickWeighted` returns `undefined` only for an empty list.
 
 ---
 
@@ -603,7 +605,7 @@ Real content, validated in CI.
 
 *Review focus:* commit 4 is the safety net, since any illegal or mistyped line fails the build. Write your own repertoire here. The examples in this document are placeholders.
 
-### PR 9 — `feat/trainer-logic`
+### PR 9 — `feat/trainer-logic` — **done**
 
 A pure session model, fully tested.
 
