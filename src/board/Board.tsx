@@ -4,12 +4,13 @@ import { layoutBoard } from '@/board/layout.ts';
 import { type Destination, Square } from '@/board/Square.tsx';
 import { type Movable, resolveTap } from '@/board/tap.ts';
 import type { Position } from '@/chess/position.ts';
-import type { Square as ChessSquare, Color } from '@/chess/types.ts';
+import type { Square as ChessSquare, Color, MoveIntent } from '@/chess/types.ts';
 
 interface BoardProps {
   position: Position;
   orientation: Color;
   movable: Movable;
+  onMove: (intent: MoveIntent) => void;
 }
 
 interface Selection {
@@ -28,7 +29,7 @@ const destinationsFrom = (
     ]),
   );
 
-export function Board({ position, orientation, movable }: BoardProps) {
+export function Board({ position, orientation, movable, onMove }: BoardProps) {
   const { squares, files, ranks } = layoutBoard(orientation);
   // Tagging the selection with its position drops it as soon as a new position arrives.
   const [selection, setSelection] = useState<Selection>();
@@ -38,6 +39,9 @@ export function Board({ position, orientation, movable }: BoardProps) {
   const tap = (square: ChessSquare): void => {
     const result = resolveTap(position, movable, selected, square);
     setSelection(result.kind === 'select' ? { position, square: result.square } : undefined);
+    if (result.kind === 'move') {
+      onMove(result.intent);
+    }
   };
 
   return (

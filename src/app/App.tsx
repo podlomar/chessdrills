@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import styles from '@/app/App.module.css';
 import { Board } from '@/board/Board.tsx';
 import { positionFromFen } from '@/chess/position.ts';
@@ -8,6 +9,7 @@ const startPosition = positionFromFen();
 
 export function App() {
   const [preference, setPreference] = useTheme();
+  const [position, setPosition] = useState(startPosition);
 
   return (
     <div class={styles.shell}>
@@ -16,7 +18,12 @@ export function App() {
         <ThemeSwitcher preference={preference} onChange={setPreference} />
       </header>
       <main class={styles.main}>
-        <Board position={startPosition} orientation="white" movable="both" />
+        <Board
+          position={position}
+          orientation="white"
+          movable="both"
+          onMove={(intent) => setPosition(position.play(intent)?.position ?? position)}
+        />
       </main>
     </div>
   );
