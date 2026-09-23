@@ -592,7 +592,7 @@ Spec types, the runtime tree, and the compiler.
 
 *Review focus:* error messages. A typo in move 14 of a deep line should tell you exactly where it is.
 
-### PR 8 — `feat/opening-library`
+### PR 8 — `feat/opening-library` — **done**
 
 Real content, validated in CI.
 

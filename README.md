@@ -10,9 +10,10 @@ its PR list and rules, including the README and plan update before each PR.
 
 - Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3
   `feat/chess-core`, PR 4 `feat/board-rendering`, PR 5
-  `feat/board-tap-to-move`, PR 7 `feat/opening-model`, plus the board style in
-  plan §4.4. PR 6 (drag-to-move) is dropped.
-- Next: PR 8 `feat/opening-library`.
+  `feat/board-tap-to-move`, PR 7 `feat/opening-model`, PR 8
+  `feat/opening-library`, plus the board style in plan §4.4. PR 6
+  (drag-to-move) is dropped.
+- Next: PR 9 `feat/trainer-logic`.
 
 ## Commands
 
@@ -62,6 +63,15 @@ npm run typecheck  # tsc -b
   index has to unwrap it; `error.message` is written for humans and names the
   opening and the numbered path. Tests use `_unsafeUnwrap` and
   `_unsafeUnwrapErr`.
+- The library (`openings/library/`) holds placeholder repertoires: Open
+  Sicilian for White and Caro-Kann for Black. The user will replace them with
+  their own lines later. `compileLibrary()` compiles all of `openingSpecs` in
+  index order.
+- Weights go on the opponent's choices. A segment that starts with the
+  player's move shared by several lines must not carry a weight; split the
+  shared move into its own segment and weight the replies instead.
+- The compiler does not check that weights are positive; the library test
+  does.
 - `Position` rebuilds chess.js from the FEN on every move, so `isGameOver`
   never detects threefold repetition. The fifty-move rule still works.
 - `play` returns `undefined` for a promotion move without a `promotion` piece;
