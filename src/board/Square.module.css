@@ -1,4 +1,7 @@
 .square {
+  --coordinate-inset: calc(100cqi / 150);
+
+  position: relative;
   display: grid;
   place-items: center;
   padding: 0;
@@ -8,8 +11,29 @@
 
 .light {
   background-color: var(--board-light);
+  color: var(--board-dark);
 }
 
 .dark {
   background-color: var(--board-dark);
+  color: var(--board-light);
+}
+
+.coordinate {
+  position: absolute;
+  font-size: calc(100cqi / 36);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rank {
+  inset-block-start: var(--coordinate-inset);
+  inset-inline-start: var(--coordinate-inset);
+}
+
+.file {
+  inset-block-end: var(--coordinate-inset);
+  inset-inline-end: var(--coordinate-inset);
 }

@@ -11,8 +11,8 @@ export function Board({ position }: BoardProps) {
   return (
     <div class={styles.board}>
       <fieldset class={styles.grid} aria-label="Chessboard">
-        {layoutSquares().map(({ square, tone }) => (
-          <Square key={square} square={square} tone={tone} piece={position.pieceAt(square)} />
+        {layoutSquares().map((layout) => (
+          <Square key={layout.square} {...layout} piece={position.pieceAt(layout.square)} />
         ))}
       </fieldset>
     </div>
