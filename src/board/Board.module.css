@@ -1,6 +1,6 @@
 .board {
   container-type: inline-size;
-  inline-size: min(100%, 100svh - var(--chrome-block-size));
+  inline-size: min(100%, 100svh - var(--chrome-block-size) - var(--board-reserved-block-size, 0px));
   margin-inline: auto;
 }
 
