@@ -6,3 +6,9 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
