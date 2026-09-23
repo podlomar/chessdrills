@@ -9,6 +9,7 @@
 
 .list {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   gap: var(--space-3);
   padding: 0;
   list-style: none;
@@ -17,6 +18,8 @@
 .card {
   position: relative;
   display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
   gap: var(--space-1);
   padding: var(--space-4);
   border: var(--border-width) solid var(--color-border);
