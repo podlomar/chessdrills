@@ -1,6 +1,6 @@
 .board {
   container-type: inline-size;
-  inline-size: min(100%, 100svh - var(--chrome-block-size));
+  inline-size: min(100%, 100svh - var(--chrome-block-size) - var(--board-reserved-block-size, 0px));
   margin-inline: auto;
 }
 
@@ -20,6 +20,9 @@
   min-inline-size: 0;
   padding: 0;
   border: 0;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .coordinates {

@@ -9,10 +9,10 @@ its PR list and rules, including the README and plan update before each PR.
 ## Status
 
 - Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3
-  `feat/chess-core`, PR 4 `feat/board-rendering`, plus the board style in plan
-  §4.4.
-- Next: PR 5 `feat/board-tap-to-move`. PR 7 `feat/opening-model` can also
-  start now, in parallel with the board PRs.
+  `feat/chess-core`, PR 4 `feat/board-rendering`, PR 5
+  `feat/board-tap-to-move`, plus the board style in plan §4.4.
+- Next: PR 7 `feat/opening-model`. PR 6 `feat/board-drag` is optional and can
+  land any time.
 
 ## Commands
 
@@ -41,6 +41,10 @@ npm run typecheck  # tsc -b
   later commit moved them onto the frame at the user's request, and another
   widened the frame from 1/30 to 1/20 of the board. The plan now describes
   this version.
+- PR 5 commit 3 also adds the `hintSquares` highlight, because it belongs to
+  the same Board API as `lastMove`.
+- In PR 5, `FreePlay` puts its controls beside the board on short landscape
+  screens (height under 36rem), so the board keeps the full height.
 - The board sits in `<fieldset aria-label="Chessboard">`, not a `div` with
   `role="group"`, because Biome's `useSemanticElements` requires it.
 
@@ -57,13 +61,21 @@ npm run typecheck  # tsc -b
   suffixes but not move numbers; stripping those is the opening parser's job.
 - `useTheme` sets the `theme-color` meta from the body's computed background,
   because `light-dark()` custom properties do not resolve to a color value.
-- `App` renders a static `Board` of the start position until PR 5 adds the
-  free-play screen.
+- `App` renders `FreePlay` directly until PR 11 adds the router.
+- Tap handling is the pure `resolveTap` in `board/tap.ts`. The Board keeps its
+  selection and pending promotion tagged with the `Position` they belong to,
+  so a new position clears them without an effect.
+- The promotion picker is a modal `<dialog>`. It carries one
+  `biome-ignore` for `useKeyWithClickEvents`: its backdrop click has a
+  keyboard equivalent in the native Escape `cancel` event.
+- Known gaps: every square is a tab stop (64 of them; a roving tabindex would
+  fix it), and focus drops to the page after the picker closes.
 - The board is a size container: the frame (`--rim-size`, `100cqi / 20`) and
   the coordinate font scale with it. Coordinates are about 13px on a 390px
   phone. `--chrome-block-size` is defined on the app shell,
-  because it measures the shell's header and padding.
-- Square buttons have no click handlers yet; `Square` is where PR 5 adds them.
+  because it measures the shell's header and padding. A screen that puts
+  something under the board sets `--board-reserved-block-size` so the board
+  shrinks to leave room for it, as `FreePlay` does.
 - The repo sits in a shared directory. Some files may be owned by another user
   and not writable in place; replace them instead of editing.
 - Push and open PRs as the GitHub account `podlomar`.

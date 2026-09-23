@@ -1,9 +1,15 @@
 .square {
+  position: relative;
   display: grid;
   place-items: center;
   padding: 0;
   border: 0;
   border-radius: 0;
+}
+
+.square:focus-visible {
+  z-index: 1;
+  outline-offset: calc(-2 * var(--focus-ring-width));
 }
 
 .light {
@@ -12,4 +18,39 @@
 
 .dark {
   background-color: var(--board-dark);
+}
+
+.lastMove {
+  background-image: linear-gradient(var(--board-last-move), var(--board-last-move));
+}
+
+.selected {
+  background-image: linear-gradient(var(--board-selected), var(--board-selected));
+}
+
+.check {
+  background-image: radial-gradient(var(--board-check) 20%, transparent 70%);
+}
+
+.hint {
+  box-shadow: inset 0 0 0 calc(100cqi / 60) var(--board-hint);
+}
+
+.move::after,
+.capture::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.move::after {
+  inset: 36%;
+  border-radius: var(--radius-full);
+  background-color: var(--board-destination);
+}
+
+.capture::after {
+  inset: 0;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 calc(100cqi / 80) var(--board-destination);
 }

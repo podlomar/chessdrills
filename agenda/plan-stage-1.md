@@ -139,8 +139,11 @@ Each semantic token is written once with `light-dark()`, and `color-scheme` on `
   --board-dark: #8d6262;
   --board-frame: #4d4545;
   --board-coordinate: #f2b0b0;
-  --board-last-move: rgb(255 214 0 / 0.4);
-  --board-selected: rgb(20 85 30 / 0.5);
+  --board-last-move: rgb(255 200 90 / 0.45);
+  --board-selected: rgb(255 236 170 / 0.55);
+  --board-destination: rgb(45 20 20 / 0.35);
+  --board-check: rgb(220 20 20 / 0.9);
+  --board-hint: rgb(70 160 255 / 0.85);
 }
 
 :root[data-theme='light'] { color-scheme: light; }
@@ -198,7 +201,7 @@ The desired look lives in `chess-style/`. The images there are references only. 
 
 - In the 1200px image the frame is 40px on each side, which is 1/30 of the board's outer size. The app widens it to **1/20** so the coordinates on it stay readable on phones. It scales with the board, so derive it from the board's size, not from a fixed spacing token.
 - Rank and file coordinates sit **on the frame**: ranks down the left side and files along the bottom, each centered on its rank or file. They use `--board-coordinate`, a lighter step of the copper pink at 5.15:1 against the frame. The text is 3/4 of the frame's thickness, about 13px on a 390px phone.
-- The last-move and selection overlays predate this style. Tune them against the copper squares when they arrive in PR 5.
+- PR 5 tuned the overlays for the copper squares: a warm orange tint for the last move, pale cream for the selection, dark dots and rings for destinations, a red glow for a checked king and a blue inset ring for hints.
 
 ---
 
@@ -524,7 +527,7 @@ Notes:
 
 *Review focus:* the component split (Board → Square → Piece) and the semantic button markup.
 
-### PR 5 — `feat/board-tap-to-move`
+### PR 5 — `feat/board-tap-to-move` — **done**
 
 An interactive board plus a free-play screen.
 
