@@ -18,6 +18,23 @@
   --red-4: #ff7b7b;
   --red-7: #c03b3b;
 
+  --color-bg: light-dark(var(--gray-1), var(--gray-12));
+  --color-surface: light-dark(var(--gray-0), var(--gray-11));
+  --color-surface-raised: light-dark(var(--gray-0), var(--gray-10));
+  --color-border: light-dark(var(--gray-3), var(--gray-9));
+  --color-text: light-dark(var(--gray-12), var(--gray-2));
+  --color-text-muted: light-dark(var(--gray-7), var(--gray-5));
+  --color-accent: light-dark(var(--blue-7), var(--blue-4));
+  --color-on-accent: light-dark(var(--gray-0), var(--gray-12));
+  --color-success: light-dark(var(--green-7), var(--green-4));
+  --color-danger: light-dark(var(--red-7), var(--red-4));
+  --color-focus: var(--color-accent);
+
+  --board-light: #eeeed2;
+  --board-dark: #769656;
+  --board-last-move: rgb(255 214 0 / 0.4);
+  --board-selected: rgb(20 85 30 / 0.5);
+
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
@@ -53,4 +70,12 @@
   --tap-target-size: 2.75rem;
   --header-block-size: 3.5rem;
   --content-max-inline-size: 40rem;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
