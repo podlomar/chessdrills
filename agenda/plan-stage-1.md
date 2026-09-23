@@ -93,7 +93,7 @@ screens ──► board, ui ──► chess
 
 ## 4. Theming and dark mode
 
-The page follows the system theme by default, and a switcher in the header lets you override it with **System / Light / Dark**. The board colors are separate tokens that stay the same in both themes for now, so you can tune them later.
+The page follows the system theme by default, and a switcher in the header lets you override it with **System / Light / Dark**. The board colors are separate tokens that stay the same in both themes for now, so you can tune them later. Their values come from the copper board style in `chess-style/` (see §4.4).
 
 ### 4.1 Two token layers
 
@@ -135,8 +135,9 @@ Each semantic token is written once with `light-dark()`, and `color-scheme` on `
   --color-danger: light-dark(var(--red-6), var(--red-4));
   --color-focus: var(--color-accent);
 
-  --board-light: #eeeed2;
-  --board-dark: #769656;
+  --board-light: #ed8d8d;
+  --board-dark: #8d6262;
+  --board-frame: #4d4545;
   --board-last-move: rgb(255 214 0 / 0.4);
   --board-selected: rgb(20 85 30 / 0.5);
 }
@@ -181,6 +182,22 @@ export function applyPreference(root: HTMLElement, preference: ThemePreference):
 
 - The `useTheme()` hook returns `[preference, setPreference]` and keeps the attribute, the storage and the `theme-color` meta tag (the mobile browser bar color) in sync.
 - `ThemeSwitcher` is a three-option segmented control built from native radio inputs. It gets keyboard support and screen-reader semantics without extra code.
+
+### 4.4 Board style
+
+The desired look lives in `chess-style/`. It is the reference for PR 4 and is not imported by the app directly.
+
+| File | What it shows |
+|---|---|
+| `kw.svg`, `qb.svg`, … | The **Merida** piece set: `{k,q,r,b,n,p}{w,b}.svg`, each with a `0 0 50 50` viewBox |
+| `README.txt` | Merida attribution: Armando Hernandez Marroquin, GPLv2+, via sharechess.github.io |
+| `copper.png` | Squares only: light `#ed8d8d`, dark `#8d6262`, a1 dark |
+| `copper_border.png` | The same squares inside a `#4d4545` frame |
+| `copper_bg.png` | The frame color alone |
+
+- The frame is 40px on each side of the 1200px image, so it is **1/30 of the board's outer size**. It scales with the board, so derive it from the board's size, not from a fixed spacing token.
+- The frame is too thin for labels. Rank and file coordinates sit **inside** the edge squares, each drawn in the opposite square color.
+- The last-move and selection overlays predate this style. Tune them against the copper squares when they arrive in PR 5.
 
 ---
 
@@ -489,16 +506,18 @@ Our own chess vocabulary and an immutable `Position` over chess.js.
 
 A static board that renders any `Position`.
 
-1. `feat(board): add piece SVG set and Piece component`
+1. `feat(board): add Merida piece set and Piece component`
 2. `feat(board): render 8×8 grid of squares from a Position`
-3. `feat(board): add rank and file coordinates`
-4. `feat(board): support flipped orientation`
-5. `style(board): size board to the viewport`
+3. `style(board): add copper square colors and frame`
+4. `feat(board): add rank and file coordinates`
+5. `feat(board): support flipped orientation`
+6. `style(board): size board to the viewport`
 
 Notes:
-- For pieces, use the cburnett set from Wikimedia Commons, which is freely licensed. Keep an attribution file.
+- Pieces are the Merida set from `chess-style/` (§4.4). Move the twelve SVGs to `src/board/pieces/` with their names unchanged, and keep `README.txt` next to them as the attribution and license file.
+- Render each piece as an `<img alt="">` of the imported SVG URL, not inline SVG. The files reuse gradient ids like `a`, so inlining 32 pieces would make them collide. The square's label already names the piece, so the image stays decorative.
 - Lay out the board with CSS Grid and `aspect-ratio: 1`. Size it with `inline-size: min(100%, 100svh - var(--chrome-block-size))` so it fits both portrait and landscape.
-- Put square colors in tokens (`--board-light`, `--board-dark`) so themes come for free later.
+- Put square and frame colors in tokens (`--board-light`, `--board-dark`, `--board-frame`) so themes come for free later. PR 2 added the board tokens with placeholder green values; commit 3 replaces them with the copper values from §4.1.
 
 *Review focus:* the component split (Board → Square → Piece) and the semantic button markup.
 
