@@ -11,17 +11,33 @@ interface SquareProps {
   piece?: ChessPiece;
   selected: boolean;
   destination?: Destination;
+  lastMove: boolean;
+  check: boolean;
+  hint: boolean;
   onTap: (square: ChessSquare) => void;
 }
 
 const describe = (square: ChessSquare, piece?: ChessPiece): string =>
   piece ? `${square}, ${piece.color} ${piece.kind}` : square;
 
-export function Square({ square, tone, piece, selected, destination, onTap }: SquareProps) {
+export function Square({
+  square,
+  tone,
+  piece,
+  selected,
+  destination,
+  lastMove,
+  check,
+  hint,
+  onTap,
+}: SquareProps) {
   const classes = [
     styles.square,
     styles[tone],
+    lastMove && styles.lastMove,
     selected && styles.selected,
+    check && styles.check,
+    hint && styles.hint,
     destination && styles[destination],
   ];
 

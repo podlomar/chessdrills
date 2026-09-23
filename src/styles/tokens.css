@@ -34,9 +34,11 @@
   --board-dark: #8d6262;
   --board-frame: #4d4545;
   --board-coordinate: #f2b0b0;
-  --board-last-move: rgb(255 214 0 / 0.4);
+  --board-last-move: rgb(255 200 90 / 0.45);
   --board-selected: rgb(255 236 170 / 0.55);
   --board-destination: rgb(45 20 20 / 0.35);
+  --board-check: rgb(220 20 20 / 0.9);
+  --board-hint: rgb(70 160 255 / 0.85);
 
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
