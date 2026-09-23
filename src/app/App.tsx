@@ -4,6 +4,7 @@ import { useRoute } from '@/app/useRoute.ts';
 import { compileLibrary } from '@/openings/library/index.ts';
 import type { Opening } from '@/openings/tree.ts';
 import { FreePlay } from '@/screens/FreePlay.tsx';
+import { Library } from '@/screens/Library.tsx';
 import { Trainer } from '@/screens/Trainer.tsx';
 import { useTheme } from '@/theme/useTheme.ts';
 import { ThemeSwitcher } from '@/ui/ThemeSwitcher.tsx';
@@ -15,11 +16,9 @@ const renderScreen = (route: Route, openings: readonly Opening[]) => {
     case 'play':
       return <FreePlay />;
     case 'library':
+      return <Library openings={openings} />;
     case 'train': {
-      const opening =
-        route.name === 'train'
-          ? openings.find((entry) => entry.id === route.openingId)
-          : openings[0];
+      const opening = openings.find((entry) => entry.id === route.openingId);
       return opening ? (
         <Trainer key={opening.id} opening={opening} />
       ) : (

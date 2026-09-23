@@ -1,0 +1,37 @@
+.library {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.name {
+  font-size: var(--font-size-lg);
+}
+
+.meta {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.description {
+  font-size: var(--font-size-sm);
+}
