@@ -1,3 +1,4 @@
+import { routeHref } from '@/app/route.ts';
 import type { Color } from '@/chess/types.ts';
 import { countLines } from '@/openings/stats.ts';
 import type { Opening } from '@/openings/tree.ts';
@@ -20,7 +21,11 @@ export function Library({ openings }: LibraryProps) {
       <ul class={styles.list}>
         {openings.map((opening) => (
           <li key={opening.id} class={styles.card}>
-            <h2 class={styles.name}>{opening.name}</h2>
+            <h2 class={styles.name}>
+              <a class={styles.link} href={routeHref({ name: 'train', openingId: opening.id })}>
+                {opening.name}
+              </a>
+            </h2>
             <p class={styles.meta}>
               {sideLabel[opening.side]} · {linesLabel(countLines(opening))}
             </p>
@@ -28,6 +33,9 @@ export function Library({ openings }: LibraryProps) {
           </li>
         ))}
       </ul>
+      <p class={styles.meta}>
+        Or <a href={routeHref({ name: 'play' })}>play freely</a> from the starting position.
+      </p>
     </section>
   );
 }

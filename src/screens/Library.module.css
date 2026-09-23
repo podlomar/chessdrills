@@ -15,6 +15,7 @@
 }
 
 .card {
+  position: relative;
   display: grid;
   gap: var(--space-1);
   padding: var(--space-4);
@@ -27,9 +28,39 @@
   font-size: var(--font-size-lg);
 }
 
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The whole card is the link's hit area; the heading stays the accessible name. */
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card:has(.link:hover) {
+  border-color: var(--color-accent);
+}
+
+.card:has(.link:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-width);
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
 .meta {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+.meta a {
+  color: var(--color-accent);
 }
 
 .description {

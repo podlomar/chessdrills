@@ -1,4 +1,5 @@
 import { useMemo, useReducer, useState } from 'preact/hooks';
+import { routeHref } from '@/app/route.ts';
 import { Board } from '@/board/Board.tsx';
 import type { MoveIntent, Square } from '@/chess/types.ts';
 import type { MoveNode, NodeId, Opening } from '@/openings/tree.ts';
@@ -82,6 +83,9 @@ export function Trainer({ opening }: TrainerProps) {
         />
       }
     >
+      <a class={styles.back} href={routeHref({ name: 'library' })}>
+        ‹ All openings
+      </a>
       <h1 class={styles.title}>{opening.name}</h1>
       <p class={styles.status} role="status">
         {statusText[session.phase.kind]}
