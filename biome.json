@@ -17,7 +17,20 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "style": {
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["chess.js"],
+                "message": "Use the adapter in src/chess instead."
+              }
+            ]
+          }
+        }
+      }
     }
   },
   "javascript": {
@@ -37,5 +50,51 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/chess/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["preact", "preact/**"],
+                    "message": "Domain code must stay framework-free."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/openings/**", "src/trainer/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["preact", "preact/**"],
+                    "message": "Domain code must stay framework-free."
+                  },
+                  {
+                    "group": ["chess.js"],
+                    "message": "Use the adapter in src/chess instead."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
