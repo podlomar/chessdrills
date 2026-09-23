@@ -1,0 +1,28 @@
+.layout {
+  --board-reserved-block-size: calc(var(--tap-target-size) + var(--space-4));
+
+  display: grid;
+  gap: var(--space-4);
+}
+
+.aside {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  inline-size: min(100%, 100svh - var(--chrome-block-size) - var(--board-reserved-block-size));
+  margin-inline: auto;
+}
+
+@media (orientation: landscape) and (height < 36rem) {
+  .layout {
+    --board-reserved-block-size: 0px;
+
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .aside {
+    inline-size: auto;
+    max-inline-size: 16rem;
+  }
+}

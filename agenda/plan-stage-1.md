@@ -617,7 +617,7 @@ A pure session model, fully tested.
 
 *Review focus:* the reducer has no side effects; randomness and timing live in the UI layer.
 
-### PR 10 — `feat/trainer-screen`
+### PR 10 — `feat/trainer-screen` — **done**
 
 Train against a hard-coded opening.
 
@@ -627,7 +627,7 @@ Train against a hard-coded opening.
 4. `feat(trainer): show mistake feedback with a hint`
 5. `feat(trainer): add line-complete panel with next line and restart`
 
-The opponent move is handled by a `useOpponentMove(session, dispatch, { delayMs, random })` hook. It starts a timeout when `phase.kind === 'opponentToMove'` and cleans it up on unmount.
+The opponent move is handled by a `useOpponentMove(session, dispatch, { delayMs, random, replay })` hook. It starts a timeout when `phase.kind === 'opponentToMove'` and cleans it up on unmount. The choice itself is the pure `chooseOpponentMove(session, random, replay)` in `trainer/opponent.ts`: it follows `replay` (the previous line) while that still matches, so **Repeat line** drills the same line again and **Next line** picks a new random one.
 
 *Review focus:* the screen is only glue. Every decision should already exist in `trainer/`.
 

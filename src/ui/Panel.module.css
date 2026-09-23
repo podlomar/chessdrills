@@ -1,0 +1,17 @@
+.panel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--color-border);
+  border-inline-start-width: var(--space-1);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-raised);
+}
+
+.danger {
+  border-inline-start-color: var(--color-danger);
+}
+
+.success {
+  border-inline-start-color: var(--color-success);
+}
