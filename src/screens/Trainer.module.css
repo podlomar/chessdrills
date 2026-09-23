@@ -1,3 +1,8 @@
+.back {
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+}
+
 .title {
   font-size: var(--font-size-lg);
 }
