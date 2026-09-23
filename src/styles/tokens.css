@@ -33,6 +33,7 @@
   --board-light: #ed8d8d;
   --board-dark: #8d6262;
   --board-frame: #4d4545;
+  --board-coordinate: #f2b0b0;
   --board-last-move: rgb(255 214 0 / 0.4);
   --board-selected: rgb(20 85 30 / 0.5);
 
