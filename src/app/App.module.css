@@ -1,6 +1,15 @@
 .shell {
+  --chrome-block-size: calc(
+    var(--header-block-size) +
+    env(safe-area-inset-top) +
+    var(--border-width) +
+    var(--space-4) +
+    max(var(--space-4), env(safe-area-inset-bottom))
+  );
+
   display: grid;
   grid-template-rows: auto 1fr;
+  grid-template-columns: minmax(0, 1fr);
   min-block-size: 100svh;
 }
 
@@ -20,6 +29,16 @@
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
+}
+
+@media (width < 24rem) {
+  .header {
+    gap: var(--space-2);
+  }
+
+  .wordmark {
+    font-size: var(--font-size-md);
+  }
 }
 
 .main {

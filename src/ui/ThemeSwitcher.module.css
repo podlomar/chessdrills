@@ -39,3 +39,9 @@
   opacity: 0;
   pointer-events: none;
 }
+
+@media (width < 24rem) {
+  .option {
+    padding-inline: var(--space-2);
+  }
+}
