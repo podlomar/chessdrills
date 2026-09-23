@@ -9,6 +9,7 @@ its PR list and rules, including the README and plan update before each PR.
 ## Status
 
 - Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3 `feat/chess-core`.
+- Also done: board style added to the plan (§4.4) from `chess-style/`.
 - Next: PR 4 `feat/board-rendering`. PR 7 `feat/opening-model` can also start
   now, in parallel with the board PRs.
 
