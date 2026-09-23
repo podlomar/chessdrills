@@ -631,7 +631,7 @@ The opponent move is handled by a `useOpponentMove(session, dispatch, { delayMs,
 
 *Review focus:* the screen is only glue. Every decision should already exist in `trainer/`.
 
-### PR 11 — `feat/opening-picker`
+### PR 11 — `feat/opening-picker` — **done**
 
 Choose what to train.
 
@@ -640,7 +640,7 @@ Choose what to train.
 3. `feat(library): start training from an opening`
 4. `style(library): responsive card layout`
 
-The router is hash-based and about 30 lines of your own code, so it works on any static host with no server config. You can swap in `preact-iso` later if you outgrow it.
+Routes are `#/` (library), `#/play` (free play) and `#/train/<openingId>`. The router is hash-based and about 30 lines of your own code, so it works on any static host with no server config. You can swap in `preact-iso` later if you outgrow it.
 
 ### PR 12 — `chore/deploy` (optional)
 

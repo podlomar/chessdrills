@@ -12,9 +12,11 @@ its PR list and rules, including the README and plan update before each PR.
   `feat/chess-core`, PR 4 `feat/board-rendering`, PR 5
   `feat/board-tap-to-move`, PR 7 `feat/opening-model`, PR 8
   `feat/opening-library`, PR 9 `feat/trainer-logic`, PR 10
-  `feat/trainer-screen`, plus the board style in plan §4.4. PR 6
-  (drag-to-move) is dropped.
-- Next: PR 11 `feat/opening-picker`.
+  `feat/trainer-screen`, PR 11 `feat/opening-picker`, plus the board style in
+  plan §4.4. PR 6 (drag-to-move) is dropped. Stage 1's required work is
+  complete.
+- Next: PR 12 `chore/deploy` (optional), or replacing the placeholder
+  repertoires with the user's own lines.
 
 ## Commands
 
@@ -87,9 +89,16 @@ npm run typecheck  # tsc -b
   suffixes but not move numbers; stripping those is the opening parser's job.
 - `useTheme` sets the `theme-color` meta from the body's computed background,
   because `light-dark()` custom properties do not resolve to a color value.
-- `App` renders the `Trainer` for a hard-coded Open Sicilian until PR 11
-  adds the router. `FreePlay` is unreachable until then. A compile error
-  renders as an alert with the compiler's message.
+- Routing: `app/route.ts` holds the pure `parseRoute` and `routeHref`, and
+  `app/useRoute.ts` listens to `hashchange`. Unknown hashes fall back to the
+  library; an unknown opening id shows an alert. `Trainer` is keyed by
+  opening id, so switching openings starts a fresh session.
+- `App` compiles the whole library once at module load. A compile error
+  renders as an alert with the compiler's message instead of any screen.
+- The header wordmark links to the library; the library links to free play,
+  and the trainer has an "All openings" link. Library cards are one link each
+  (the heading's link stretches over the card).
+- The line count on a card is the number of leaves (`openings/stats.ts`).
 - `ui/BoardLayout` is the shared board-plus-side-panel layout of `FreePlay`
   and `Trainer`. It reserves room under the board in portrait and puts the
   panel beside the board on short landscape screens.
