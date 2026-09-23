@@ -1,7 +1,7 @@
 import { useMemo, useReducer, useState } from 'preact/hooks';
 import { Board } from '@/board/Board.tsx';
 import type { MoveIntent, Square } from '@/chess/types.ts';
-import type { NodeId, Opening } from '@/openings/tree.ts';
+import type { MoveNode, NodeId, Opening } from '@/openings/tree.ts';
 import { LineInfo } from '@/screens/LineInfo.tsx';
 import styles from '@/screens/Trainer.module.css';
 import { useOpponentMove } from '@/screens/useOpponentMove.ts';
@@ -32,7 +32,12 @@ const statusText: Record<Phase['kind'], string> = {
 
 export function Trainer({ opening }: TrainerProps) {
   const [session, dispatch] = useReducer(sessionReducer, opening, startSession);
-  useOpponentMove(session, dispatch, { delayMs: OPPONENT_DELAY_MS, random: Math.random });
+  const [replay, setReplay] = useState<readonly MoveNode[]>();
+  useOpponentMove(session, dispatch, {
+    delayMs: OPPONENT_DELAY_MS,
+    random: Math.random,
+    replay,
+  });
   const node = currentNode(session);
   // The Board ties its selection to the Position object, so keep it stable per node.
   const position = useMemo(() => currentPosition(session), [node]);
@@ -44,6 +49,16 @@ export function Trainer({ opening }: TrainerProps) {
   const showHint = (): void => {
     setHintAt(node.id);
     dispatch({ type: 'dismissMistake' });
+  };
+
+  const nextLine = (): void => {
+    setReplay(undefined);
+    dispatch({ type: 'restart' });
+  };
+
+  const repeatLine = (): void => {
+    setReplay(session.path);
+    dispatch({ type: 'restart' });
   };
 
   const move = (intent: MoveIntent): void => {
@@ -79,6 +94,20 @@ export function Trainer({ opening }: TrainerProps) {
           <div class={styles.actions}>
             <Button onClick={() => dispatch({ type: 'dismissMistake' })}>Try again</Button>
             <Button onClick={showHint}>Show hint</Button>
+          </div>
+        </Panel>
+      )}
+      {session.phase.kind === 'lineComplete' && (
+        <Panel tone="success">
+          <p>
+            Line complete{' '}
+            {session.mistakes === 0
+              ? 'without mistakes.'
+              : `with ${session.mistakes} ${session.mistakes === 1 ? 'mistake' : 'mistakes'}.`}
+          </p>
+          <div class={styles.actions}>
+            <Button onClick={nextLine}>Next line</Button>
+            <Button onClick={repeatLine}>Repeat line</Button>
           </div>
         </Panel>
       )}
