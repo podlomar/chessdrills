@@ -8,6 +8,7 @@
   display: flex;
   align-items: center;
   block-size: calc(var(--header-block-size) + env(safe-area-inset-top));
+  border-block-end: var(--border-width) solid var(--color-border);
   padding-block-start: env(safe-area-inset-top);
   padding-inline: max(var(--space-4), env(safe-area-inset-left))
     max(var(--space-4), env(safe-area-inset-right));
