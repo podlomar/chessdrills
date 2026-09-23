@@ -1,6 +1,7 @@
 import { positionFromFen } from '@/chess/position.ts';
 import type { Move } from '@/chess/types.ts';
 import type { MoveNode, Opening, PositionNode } from '@/openings/tree.ts';
+import { currentNode } from '@/trainer/selectors.ts';
 
 export type Phase =
   | { kind: 'playerToMove' }
@@ -36,8 +37,6 @@ export const startSession = (opening: Opening): Session => ({
   mistakes: 0,
 });
 
-const currentOf = (session: Session): PositionNode => session.path.at(-1) ?? session.opening.root;
-
 const advance = (session: Session, node: MoveNode): Session => ({
   ...session,
   path: [...session.path, node],
@@ -48,7 +47,7 @@ const playerMoved = (session: Session, move: Move): Session => {
   if (session.phase.kind !== 'playerToMove') {
     return session;
   }
-  const node = currentOf(session).children.find((child) => child.move.san === move.san);
+  const node = currentNode(session).children.find((child) => child.move.san === move.san);
   if (!node) {
     return {
       ...session,
@@ -60,7 +59,7 @@ const playerMoved = (session: Session, move: Move): Session => {
 };
 
 const opponentMoved = (session: Session, node: MoveNode): Session =>
-  session.phase.kind === 'opponentToMove' && node.parentId === currentOf(session).id
+  session.phase.kind === 'opponentToMove' && node.parentId === currentNode(session).id
     ? advance(session, node)
     : session;
 
