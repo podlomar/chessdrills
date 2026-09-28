@@ -3,7 +3,7 @@ import { routeHref } from '@/app/route.ts';
 import { navigate } from '@/app/useRoute.ts';
 import { Board } from '@/board/Board.tsx';
 import type { MoveIntent, Square } from '@/chess/types.ts';
-import type { OpeningLine } from '@/openings/lines.ts';
+import { listLines, type OpeningLine } from '@/openings/lines.ts';
 import type { NodeId, Opening } from '@/openings/tree.ts';
 import { LineInfo } from '@/screens/LineInfo.tsx';
 import styles from '@/screens/Trainer.module.css';
@@ -52,7 +52,16 @@ export function Trainer({ opening, line }: TrainerProps) {
     dispatch({ type: 'dismissMistake' });
   };
 
+  const lines = useMemo(() => listLines(opening), [opening]);
   const restart = (): void => dispatch({ type: 'restart' });
+
+  const chooseLine = (lineId: string): void =>
+    navigate(
+      lineId === ''
+        ? { name: 'train', openingId: opening.id }
+        : { name: 'train', openingId: opening.id, lineId },
+      restart,
+    );
 
   const trainRandom = (): void => navigate({ name: 'train', openingId: opening.id }, restart);
 
@@ -84,6 +93,21 @@ export function Trainer({ opening, line }: TrainerProps) {
         ‹ All openings
       </a>
       <h1 class={styles.title}>{opening.name}</h1>
+      <label class={styles.lineField}>
+        <span class={styles.lineLabel}>Line</span>
+        <select
+          class={styles.lineSelect}
+          value={line?.id ?? ''}
+          onChange={(event) => chooseLine(event.currentTarget.value)}
+        >
+          <option value="">Random line</option>
+          {lines.map((entry) => (
+            <option key={entry.id} value={entry.id}>
+              {entry.label}
+            </option>
+          ))}
+        </select>
+      </label>
       <p class={styles.status} role="status">
         {statusText[session.phase.kind]}
       </p>
