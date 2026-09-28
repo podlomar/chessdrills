@@ -14,9 +14,14 @@ export const currentNode = (session: Session): PositionNode =>
 export const currentPosition = (session: Session): Position =>
   positionFromFen(currentNode(session).fen);
 
+export const candidateMoves = (session: Session): readonly MoveNode[] => {
+  const planned = session.line?.[session.path.length];
+  return planned ? [planned] : currentNode(session).children;
+};
+
 export const expectedMoves = (session: Session): readonly MoveNode[] =>
   session.phase.kind === 'playerToMove' || session.phase.kind === 'mistake'
-    ? currentNode(session).children
+    ? candidateMoves(session)
     : [];
 
 export const breadcrumb = (session: Session): readonly string[] =>

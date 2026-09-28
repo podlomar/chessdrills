@@ -2,6 +2,7 @@ import styles from '@/app/App.module.css';
 import { type Route, routeHref } from '@/app/route.ts';
 import { useRoute } from '@/app/useRoute.ts';
 import { compileLibrary } from '@/openings/library/index.ts';
+import { findLine } from '@/openings/lines.ts';
 import type { Opening } from '@/openings/tree.ts';
 import { FreePlay } from '@/screens/FreePlay.tsx';
 import { Library } from '@/screens/Library.tsx';
@@ -19,10 +20,17 @@ const renderScreen = (route: Route, openings: readonly Opening[]) => {
       return <Library openings={openings} />;
     case 'train': {
       const opening = openings.find((entry) => entry.id === route.openingId);
-      return opening ? (
-        <Trainer key={opening.id} opening={opening} />
+      if (!opening) {
+        return <p role="alert">There is no opening with this id.</p>;
+      }
+      if (route.lineId === undefined) {
+        return <Trainer key={opening.id} opening={opening} />;
+      }
+      const line = findLine(opening, route.lineId);
+      return line ? (
+        <Trainer key={`${opening.id}/${line.id}`} opening={opening} line={line} />
       ) : (
-        <p role="alert">There is no opening with this id.</p>
+        <p role="alert">This opening has no such line.</p>
       );
     }
   }

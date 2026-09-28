@@ -40,14 +40,9 @@ describe('chooseOpponentMove', () => {
     expect(chooseOpponentMove(session, () => 0.5)?.move.san).toBe('c5');
   });
 
-  it('follows a replayed line while it still matches', () => {
-    const session = playE4(startSession(opening));
-    const replay = [moveNodeAt('e4'), moveNodeAt('e4 c5')];
-    expect(chooseOpponentMove(session, () => 0, replay)?.move.san).toBe('c5');
-  });
-
-  it('falls back to a random pick past the end of the replay', () => {
-    const session = playE4(startSession(opening));
-    expect(chooseOpponentMove(session, () => 0, [moveNodeAt('e4')])?.move.san).toBe('e5');
+  it('follows the session’s line instead of picking', () => {
+    const line = [moveNodeAt('e4'), moveNodeAt('e4 c5')];
+    const session = playE4(startSession(opening, line));
+    expect(chooseOpponentMove(session, () => 0)?.move.san).toBe('c5');
   });
 });

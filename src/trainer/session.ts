@@ -1,7 +1,7 @@
 import { positionFromFen } from '@/chess/position.ts';
 import type { Move } from '@/chess/types.ts';
 import type { MoveNode, Opening, PositionNode } from '@/openings/tree.ts';
-import { currentNode } from '@/trainer/selectors.ts';
+import { candidateMoves } from '@/trainer/selectors.ts';
 
 export type Phase =
   | { kind: 'playerToMove' }
@@ -11,6 +11,8 @@ export type Phase =
 
 export interface Session {
   opening: Opening;
+  // A path from the root to a leaf. When set, only its moves count, for both sides.
+  line?: readonly MoveNode[];
   path: readonly MoveNode[];
   phase: Phase;
   mistakes: number;
@@ -30,8 +32,9 @@ const phaseAt = (opening: Opening, node: PositionNode): Phase => {
   return { kind: turn === opening.side ? 'playerToMove' : 'opponentToMove' };
 };
 
-export const startSession = (opening: Opening): Session => ({
+export const startSession = (opening: Opening, line?: readonly MoveNode[]): Session => ({
   opening,
+  line,
   path: [],
   phase: phaseAt(opening, opening.root),
   mistakes: 0,
@@ -47,7 +50,7 @@ const playerMoved = (session: Session, move: Move): Session => {
   if (session.phase.kind !== 'playerToMove') {
     return session;
   }
-  const node = currentNode(session).children.find((child) => child.move.san === move.san);
+  const node = candidateMoves(session).find((candidate) => candidate.move.san === move.san);
   if (!node) {
     return {
       ...session,
@@ -59,7 +62,7 @@ const playerMoved = (session: Session, move: Move): Session => {
 };
 
 const opponentMoved = (session: Session, node: MoveNode): Session =>
-  session.phase.kind === 'opponentToMove' && node.parentId === currentNode(session).id
+  session.phase.kind === 'opponentToMove' && candidateMoves(session).includes(node)
     ? advance(session, node)
     : session;
 
@@ -74,6 +77,6 @@ export const sessionReducer = (session: Session, action: SessionAction): Session
         ? { ...session, phase: { kind: 'playerToMove' } }
         : session;
     case 'restart':
-      return startSession(session.opening);
+      return startSession(session.opening, session.line);
   }
 };

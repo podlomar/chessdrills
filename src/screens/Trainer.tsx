@@ -1,8 +1,10 @@
 import { useMemo, useReducer, useState } from 'preact/hooks';
 import { routeHref } from '@/app/route.ts';
+import { navigate } from '@/app/useRoute.ts';
 import { Board } from '@/board/Board.tsx';
 import type { MoveIntent, Square } from '@/chess/types.ts';
-import type { MoveNode, NodeId, Opening } from '@/openings/tree.ts';
+import type { OpeningLine } from '@/openings/lines.ts';
+import type { NodeId, Opening } from '@/openings/tree.ts';
 import { LineInfo } from '@/screens/LineInfo.tsx';
 import styles from '@/screens/Trainer.module.css';
 import { useOpponentMove } from '@/screens/useOpponentMove.ts';
@@ -22,6 +24,7 @@ const OPPONENT_DELAY_MS = 500;
 
 interface TrainerProps {
   opening: Opening;
+  line?: OpeningLine;
 }
 
 const statusText: Record<Phase['kind'], string> = {
@@ -31,14 +34,11 @@ const statusText: Record<Phase['kind'], string> = {
   lineComplete: 'Line complete',
 };
 
-export function Trainer({ opening }: TrainerProps) {
-  const [session, dispatch] = useReducer(sessionReducer, opening, startSession);
-  const [replay, setReplay] = useState<readonly MoveNode[]>();
-  useOpponentMove(session, dispatch, {
-    delayMs: OPPONENT_DELAY_MS,
-    random: Math.random,
-    replay,
-  });
+export function Trainer({ opening, line }: TrainerProps) {
+  const [session, dispatch] = useReducer(sessionReducer, line?.path, (path) =>
+    startSession(opening, path),
+  );
+  useOpponentMove(session, dispatch, { delayMs: OPPONENT_DELAY_MS, random: Math.random });
   const node = currentNode(session);
   // The Board ties its selection to the Position object, so keep it stable per node.
   const position = useMemo(() => currentPosition(session), [node]);
@@ -52,15 +52,12 @@ export function Trainer({ opening }: TrainerProps) {
     dispatch({ type: 'dismissMistake' });
   };
 
-  const nextLine = (): void => {
-    setReplay(undefined);
-    dispatch({ type: 'restart' });
-  };
+  const restart = (): void => dispatch({ type: 'restart' });
 
-  const repeatLine = (): void => {
-    setReplay(session.path);
-    dispatch({ type: 'restart' });
-  };
+  const trainRandom = (): void => navigate({ name: 'train', openingId: opening.id }, restart);
+
+  const repeatLine = (): void =>
+    navigate({ name: 'train', openingId: opening.id, lineId: node.id }, restart);
 
   const move = (intent: MoveIntent): void => {
     const played = position.play(intent);
@@ -110,7 +107,7 @@ export function Trainer({ opening }: TrainerProps) {
               : `with ${session.mistakes} ${session.mistakes === 1 ? 'mistake' : 'mistakes'}.`}
           </p>
           <div class={styles.actions}>
-            <Button onClick={nextLine}>Next line</Button>
+            <Button onClick={trainRandom}>{line ? 'Random line' : 'Next line'}</Button>
             <Button onClick={repeatLine}>Repeat line</Button>
           </div>
         </Panel>
