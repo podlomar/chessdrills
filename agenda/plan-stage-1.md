@@ -643,7 +643,7 @@ Choose what to train.
 
 Routes are `#/` (library), `#/play` (free play) and `#/train/<openingId>`. The router is hash-based and about 30 lines of your own code, so it works on any static host with no server config. You can swap in `preact-iso` later if you outgrow it.
 
-### PR 12 — `chore/deploy`
+### PR 12 — `chore/deploy` — **done**
 
 Make it live at `https://chessdrills.podlomar.me` and installable on a phone. It deploys with [uncloud](https://uncloud.run) to the user's own server. That cluster was initialised with `uc machine init --no-dns`, so there is no `*.uncld.dev` domain and DNS is managed by hand.
 

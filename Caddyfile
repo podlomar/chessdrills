@@ -1,0 +1,18 @@
+# Serves the static build inside the container. uncloud's own Caddy terminates TLS in front of it.
+{
+	admin off
+	auto_https off
+}
+
+:8000 {
+	root * /srv
+	encode zstd gzip
+
+	# Vite puts a content hash in every asset file name, so these never change.
+	header /assets/* Cache-Control "public, max-age=31536000, immutable"
+
+	@entry path / /index.html /manifest.webmanifest
+	header @entry Cache-Control "no-cache"
+
+	file_server
+}

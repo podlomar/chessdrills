@@ -1,0 +1,7 @@
+name: chessdrills
+
+services:
+  chessdrills:
+    build: .
+    x-ports:
+      - chessdrills.podlomar.me:8000/https
