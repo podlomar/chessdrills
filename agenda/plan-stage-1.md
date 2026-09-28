@@ -429,6 +429,7 @@ export type Phase =
 
 export interface Session {
   opening: Opening;
+  line?: readonly MoveNode[];
   path: readonly MoveNode[];
   phase: Phase;
   mistakes: number;
@@ -440,7 +441,7 @@ export type SessionAction =
   | { type: 'dismissMistake' }
   | { type: 'restart' };
 
-export function startSession(opening: Opening): Session;
+export function startSession(opening: Opening, line?: readonly MoveNode[]): Session;
 export function sessionReducer(session: Session, action: SessionAction): Session;
 ```
 
@@ -449,6 +450,7 @@ Selectors (`trainer/selectors.ts`):
 ```ts
 export function currentNode(session: Session): PositionNode;
 export function currentPosition(session: Session): Position;
+export function candidateMoves(session: Session): readonly MoveNode[];
 export function expectedMoves(session: Session): readonly MoveNode[];
 export function breadcrumb(session: Session): readonly string[];
 export function visibleNotes(session: Session): readonly Annotation[];
@@ -471,6 +473,7 @@ Rules:
 - If you play Black, the session starts in the `opponentToMove` phase.
 - An action that doesn't fit the current phase returns the session unchanged. That includes an `opponentMoved` node that isn't a child of the current node.
 - `pickWeighted` returns `undefined` only for an empty list.
+- `line` (a path from the root to a leaf, from `listLines` in `openings/lines.ts`) trains one line. `candidateMoves` is then the line's next move instead of all children, for both sides: another repertoire move becomes a `mistake`, and the opponent always plays the line. `restart` keeps the line.
 
 ---
 
@@ -628,7 +631,9 @@ Train against a hard-coded opening.
 4. `feat(trainer): show mistake feedback with a hint`
 5. `feat(trainer): add line-complete panel with next line and restart`
 
-The opponent move is handled by a `useOpponentMove(session, dispatch, { delayMs, random, replay })` hook. It starts a timeout when `phase.kind === 'opponentToMove'` and cleans it up on unmount. The choice itself is the pure `chooseOpponentMove(session, random, replay)` in `trainer/opponent.ts`: it follows `replay` (the previous line) while that still matches, so **Repeat line** drills the same line again and **Next line** picks a new random one.
+The opponent move is handled by a `useOpponentMove(session, dispatch, { delayMs, random })` hook. It starts a timeout when `phase.kind === 'opponentToMove'` and cleans it up on unmount. The choice itself is the pure `chooseOpponentMove(session, random)` in `trainer/opponent.ts`, which picks among `candidateMoves`.
+
+A **Line** dropdown in the trainer offers **Random line** and every line of the opening, and each line has its own route, `#/train/<openingId>/<lineId>`. The line id is the leaf's `NodeId`. At the end of a line, **Repeat line** goes to that line's route, and **Next line** / **Random line** goes to the random route. Either button restarts in place when the route would not change.
 
 *Review focus:* the screen is only glue. Every decision should already exist in `trainer/`.
 
