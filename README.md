@@ -6,6 +6,10 @@ played against you. Client-only, Preact + TypeScript + CSS Modules.
 The plan lives in [`agenda/plan-stage-1.md`](agenda/plan-stage-1.md). Follow
 its PR list and rules, including the README and plan update before each PR.
 
+## Assets
+
+The chessboard style is using the Merida pieces set from https://sharechess.github.io
+
 ## Status
 
 - Done: PR 1 `chore/project-setup`, PR 2 `feat/dark-mode`, PR 3
@@ -31,6 +35,124 @@ npm run check      # Biome lint + format check
 npm run fix        # Biome with --write
 npm run typecheck  # tsc -b
 ```
+
+## Deployment
+
+The app runs at <https://chessdrills.podlomar.me> as the uncloud service
+`chessdrills` from [`compose.yaml`](compose.yaml). The image built from
+[`Dockerfile`](Dockerfile) serves `dist/` with Caddy on port `8000`
+([`Caddyfile`](Caddyfile)); uncloud's own Caddy terminates TLS in front of it.
+Every push to `master` deploys through
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
+
+The steps below set this up once. `USER@HOST` is the SSH login used for
+`uc machine init`, and `SERVER_IP` is the server's public IP. Until step 5 is
+done, the deploy workflow fails on every push to `master`.
+
+### 1. Point the domain at the server
+
+The cluster was initialised with `--no-dns`, so uncloud manages no DNS. At the
+DNS provider, create an `A` record for `chessdrills.podlomar.me` pointing at
+`SERVER_IP`.
+
+```sh
+dig +short chessdrills.podlomar.me
+```
+
+Check: it prints `SERVER_IP`. If it prints nothing, wait for the record to
+propagate; Caddy cannot get a certificate before it resolves.
+
+### 2. Check the cluster
+
+On a machine with the cluster context:
+
+```sh
+uc machine ls
+uc ls
+```
+
+Check: the server is listed and `uc ls` shows the `caddy` service. If `caddy`
+is missing (the cluster was initialised with `--no-caddy`), run
+`uc caddy deploy`.
+
+### 3. Deploy once by hand
+
+From the repo root, on the same machine, with Docker running:
+
+```sh
+uc deploy
+```
+
+It prints the deployment plan and asks for confirmation. It builds the image
+locally, tags it `chessdrills/chessdrills:<git date>.<short sha>` and pushes it
+to the server over SSH, with no registry.
+
+```sh
+curl -sI https://chessdrills.podlomar.me
+```
+
+Check: the status line is `HTTP/2 200`. If TLS fails, `uc caddy logs` shows
+the certificate error; it is almost always the DNS record from step 1.
+
+### 4. Create a deploy key
+
+```sh
+ssh-keygen -t ed25519 -N '' -C chessdrills-deploy -f chessdrills-deploy
+ssh-copy-id -i chessdrills-deploy.pub USER@HOST
+```
+
+```sh
+ssh -i chessdrills-deploy -o IdentitiesOnly=yes USER@HOST true
+```
+
+Check: it exits without asking for a password. If it asks, the public key is
+not in the server's `~/.ssh/authorized_keys` for `USER`.
+
+### 5. Create the `production` environment and its secrets
+
+The environment only accepts deployments from `master`:
+
+```sh
+gh api -X PUT repos/podlomar/chessdrills/environments/production \
+  -F 'deployment_branch_policy[protected_branches]=false' \
+  -F 'deployment_branch_policy[custom_branch_policies]=true'
+gh api -X POST \
+  repos/podlomar/chessdrills/environments/production/deployment-branch-policies \
+  -f name=master
+```
+
+```sh
+gh secret set DEPLOY_SSH_KEY --env production < chessdrills-deploy
+ssh-keyscan HOST | gh secret set DEPLOY_KNOWN_HOSTS --env production
+gh secret set DEPLOY_TARGET --env production --body USER@HOST
+gh secret list --env production
+```
+
+Check: the list shows all three secrets. Compare the scanned host key with
+`ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` run on the server; a
+mismatch means the scan did not reach the real server. Then delete the local
+key files: `rm chessdrills-deploy chessdrills-deploy.pub`.
+
+### 6. Run the workflow
+
+```sh
+gh workflow run deploy.yml --ref master
+gh run watch
+```
+
+Check: the run succeeds and `uc ls` shows `chessdrills`. If the Deploy step
+fails:
+
+- `Permission denied (publickey)`: redo step 4, then `DEPLOY_SSH_KEY`.
+- `Host key verification failed`: redo `DEPLOY_KNOWN_HOSTS`.
+- `permission denied` on the uncloud or Docker socket: `USER` is not the
+  `uc machine init` user; use that one in `DEPLOY_TARGET`.
+
+### Operations
+
+- Logs: `uc logs chessdrills`.
+- Redeploy the current `master`: `gh workflow run deploy.yml --ref master`.
+- Roll back: check out an earlier commit and run `uc deploy` from it.
 
 ## Deviations
 
