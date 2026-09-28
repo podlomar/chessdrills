@@ -17,13 +17,10 @@ The chessboard style is using the Merida pieces set from https://sharechess.gith
   `feat/board-tap-to-move`, PR 7 `feat/opening-model`, PR 8
   `feat/opening-library`, PR 9 `feat/trainer-logic`, PR 10
   `feat/trainer-screen`, PR 11 `feat/opening-picker`, plus the board style in
-  plan §4.4. PR 6 (drag-to-move) is dropped. Stage 1's required work is
-  complete.
-- Also done: plan PR 12 rewritten to deploy with uncloud to
-  `chessdrills.podlomar.me` instead of GitHub Pages, with a GitHub Actions
-  workflow that deploys after every merge to `master`.
-- Next: PR 12 `chore/deploy`, or replacing the placeholder repertoires with
-  the user's own lines.
+  plan §4.4, and PR 12 `chore/deploy`. PR 6 (drag-to-move) is dropped.
+  Stage 1 is complete.
+- Next: the one-time deployment setup below (not done yet), then replacing
+  the placeholder repertoires with the user's own lines.
 
 ## Commands
 
@@ -248,6 +245,17 @@ fails:
   because it measures the shell's header and padding. A screen that puts
   something under the board sets `--board-reserved-block-size` so the board
   shrinks to leave room for it, as `FreePlay` does.
+- The deploy workflow has not run yet: it needs the secrets from step 5 of
+  the deployment setup. `ssh://` in `uc --connect` uses the system `ssh`
+  client (checked in uncloud's source), so the workflow's ssh-agent key and
+  `known_hosts` apply.
+- The app icon (`public/icon.svg`) is the Merida white knight on a 2×2
+  copper board. `public/icon-maskable.svg` is the full-bleed variant. The
+  PNGs were rendered from these two SVGs with headless Chrome; re-render them
+  after changing either.
+- A local image built from uncommitted changes gets a `.dirty` tag suffix.
+- SSH to `github.com` hung on this machine at the end of stage 1; git over
+  HTTPS with `gh`'s credential helper worked.
 - The repo sits in a shared directory. Some files may be owned by another user
   and not writable in place; replace them instead of editing.
 - Push and open PRs as the GitHub account `podlomar`.
