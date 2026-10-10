@@ -19,6 +19,9 @@ The chessboard style is using the Merida pieces set from https://sharechess.gith
   `feat/trainer-screen`, PR 11 `feat/opening-picker`, plus the board style in
   plan §4.4, and PR 12 `chore/deploy`. PR 6 (drag-to-move) is dropped.
   Stage 1 is complete.
+- In progress (draft PR #14, `feat/wayward-opening`, do not merge yet): the
+  user's Wayward Queen Attack repertoire, and choosing a specific line or a
+  random one in the trainer.
 - Next: the one-time deployment setup below (not done yet), then replacing
   the placeholder repertoires with the user's own lines.
 
@@ -175,9 +178,10 @@ fails:
   per the user's coding style; the plan's §5.3 now shows this API. It also
   added `Position.moveNumber` and `isValidFen` so errors can number moves and
   reject a bad `startFen` without chess.js throwing.
-- PR 10's "restart" button is **Repeat line**, which replays the same
-  opponent choices; **Next line** starts a new random line. That needs the
-  `replay` option described in plan PR 10.
+- Beyond the plan: the trainer can drill a single line (`Session.line`, the
+  **Line** dropdown and `#/train/<openingId>/<lineId>`). **Repeat line** goes
+  to that line's route. This replaced PR 10's `replay` option. Plan §5.4 and
+  PR 10 describe the current version.
 - The board sits in `<fieldset aria-label="Chessboard">`, not a `div` with
   `role="group"`, because Biome's `useSemanticElements` requires it.
 
@@ -221,6 +225,12 @@ fails:
   and the trainer has an "All openings" link. Library cards are one link each
   (the heading's link stretches over the card).
 - The line count on a card is the number of leaves (`openings/stats.ts`).
+- `listLines` labels a line by its deepest name plus up to four numbered
+  moves after it, and spells out every move after that name when two labels
+  would collide. A line id must be a leaf; any other id shows an alert.
+- `navigate` in `app/useRoute.ts` sets the hash, or calls a callback when the
+  hash already matches, since then no `hashchange` fires. `App` keys
+  `Trainer` by opening and line, so changing either starts a fresh session.
 - `ui/BoardLayout` is the shared board-plus-side-panel layout of `FreePlay`
   and `Trainer`. It reserves room under the board in portrait and puts the
   panel beside the board on short landscape screens.

@@ -3,6 +3,7 @@ import { positionFromFen } from '@/chess/position.ts';
 import type { Move } from '@/chess/types.ts';
 import { compileOpening } from '@/openings/compile.ts';
 import { compileLibrary } from '@/openings/library/index.ts';
+import { findLine } from '@/openings/lines.ts';
 import type { LineSpec, OpeningSpec } from '@/openings/spec.ts';
 import type { Opening } from '@/openings/tree.ts';
 import { seededRandom } from '@/testing/seededRandom.ts';
@@ -165,6 +166,41 @@ describe('sessionReducer', () => {
     player(start, 'd4');
     sessionReducer(start, { type: 'restart' });
     expect({ path: start.path, phase: start.phase, mistakes: start.mistakes }).toEqual(snapshot);
+  });
+});
+
+describe('training a single line', () => {
+  const sicilianNc3 = findLine(ruyOrSicilian, 'e4 c5 Nc3')?.path;
+  if (!sicilianNc3) {
+    throw new Error('no line e4 c5 Nc3');
+  }
+
+  it('only accepts the line’s own move, even where the repertoire has others', () => {
+    const afterC5 = opponent(player(startSession(ruyOrSicilian, sicilianNc3), 'e4'), 'c5');
+    expect(expectedMoves(afterC5).map((node) => node.move.san)).toEqual(['Nc3']);
+    expect(player(afterC5, 'Nf3').phase.kind).toBe('mistake');
+    expect(player(afterC5, 'Nc3').phase.kind).toBe('lineComplete');
+  });
+
+  it('ignores opponent moves that leave the line', () => {
+    const afterE4 = player(startSession(ruyOrSicilian, sicilianNc3), 'e4');
+    const e5 = currentNode(afterE4).children.find((child) => child.move.san === 'e5');
+    if (!e5) {
+      throw new Error('e5 is not in the tree');
+    }
+    expect(sessionReducer(afterE4, { type: 'opponentMoved', node: e5 })).toBe(afterE4);
+  });
+
+  it('keeps the line on restart', () => {
+    const played = player(startSession(ruyOrSicilian, sicilianNc3), 'e4');
+    expect(sessionReducer(played, { type: 'restart' }).line).toBe(sicilianNc3);
+  });
+
+  it('plays through to the end of the line with any random source', () => {
+    for (let seed = 1; seed <= 10; seed += 1) {
+      const done = playThrough(startSession(ruyOrSicilian, sicilianNc3), seededRandom(seed));
+      expect(sans(done)).toEqual(['e4', 'c5', 'Nc3']);
+    }
   });
 });
 
