@@ -49,3 +49,19 @@
   inset-block-end: 0;
   block-size: var(--rim-size);
 }
+
+/* On phones the board bleeds past the page gutters and drops the rim. */
+@media (orientation: portrait) and (width < 40rem) {
+  .board {
+    inline-size: calc(100% + var(--gutter-inline-start) + var(--gutter-inline-end));
+    margin-inline: calc(-1 * var(--gutter-inline-start)) calc(-1 * var(--gutter-inline-end));
+  }
+
+  .frame {
+    --rim-size: 0px;
+  }
+
+  .coordinates {
+    display: none;
+  }
+}

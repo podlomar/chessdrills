@@ -6,6 +6,8 @@
     var(--space-4) +
     max(var(--space-4), env(safe-area-inset-bottom))
   );
+  --gutter-inline-start: max(var(--space-4), env(safe-area-inset-left));
+  --gutter-inline-end: max(var(--space-4), env(safe-area-inset-right));
 
   display: grid;
   grid-template-rows: auto 1fr;
@@ -21,8 +23,7 @@
   block-size: calc(var(--header-block-size) + env(safe-area-inset-top));
   border-block-end: var(--border-width) solid var(--color-border);
   padding-block-start: env(safe-area-inset-top);
-  padding-inline: max(var(--space-4), env(safe-area-inset-left))
-    max(var(--space-4), env(safe-area-inset-right));
+  padding-inline: var(--gutter-inline-start) var(--gutter-inline-end);
 }
 
 .wordmark {
@@ -48,6 +49,5 @@
   max-inline-size: var(--content-max-inline-size);
   margin-inline: auto;
   padding-block: var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
-  padding-inline: max(var(--space-4), env(safe-area-inset-left))
-    max(var(--space-4), env(safe-area-inset-right));
+  padding-inline: var(--gutter-inline-start) var(--gutter-inline-end);
 }
